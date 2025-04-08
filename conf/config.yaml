@@ -1,0 +1,39 @@
+# Configuration for the Daily Digest Emailer
+hydra:
+  run:
+    dir: "." 
+
+# Credentials for Gmail API
+credentials_path: "./tokens/credentials.json" # Path to the credentials file for Gmail API
+token_path: "./tokens/token.json"             # Path to the token file for Gmail API
+
+# Email settings
+email:
+  recipients: # Email addresses to send the digest to
+  - "lowrenhwa88+1@gmail.com" 
+  - "lowrenhwa88+2@gmail.com"
+  sender: "lowrenhwa88@gmail.com"             # The Gmail account you authenticated
+  subject_prefix: "Your Daily Digest"         # Prefix for the email subject
+  email_format: html # or 'text' 
+
+# Location for sunrise/sunset (Singapore Coordinates)
+location:
+  latitude: 1.3521
+  longitude: 103.8198
+
+# ArXiv settings
+arxiv:
+  query: "Image Segmentation"  # Change this value to search for a different query
+  max_results: 5              # Maximum number of results to fetch from arXiv
+  random_k: 3                # Number of random papers to include in the email, this should be less than or equal to max_results
+  download_papers: true  # Whether to download the papers
+  storage_type: local  # Options: "local" or "s3"
+  storage_dir: "data/arvix_papers"  # Base path for local storage
+
+# S3 settings (if storage_type is s3)
+s3_config:
+  bucket: "your-bucket-name"
+  region: "us-east-1"
+  access_key_id: "YOUR_ACCESS_KEY"
+  secret_access_key: "YOUR_SECRET_KEY"
+  base_path: "papers"  # The key prefix inside the bucket

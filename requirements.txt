@@ -1,0 +1,10 @@
+google-api-python-client
+google-auth-oauthlib
+google-auth-httplib2
+requests
+beautifulsoup4
+hydra-core
+omegaconf
+lxml
+boto3
+tqdm
