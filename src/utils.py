@@ -1,42 +1,100 @@
-import os
 import logging
-import requests
+from email.utils import parseaddr
+from typing import Dict, Optional
+
 import boto3
-from typing import Optional
+import requests
+from geopy.extra.rate_limiter import RateLimiter
+from geopy.geocoders import Nominatim
 
 
-def download_pdf_local(
-    pdf_url: str, output_dir: str, dest_filename: str
-) -> Optional[str]:
+def get_display_name(email_string: str) -> str:
+    """Extracts the display name from an email address.
+
+    If the email string includes a display name, return it.
+    Otherwise, try to infer a name from the email's local part.
+    """
+    name, address = parseaddr(email_string)
+    if name:
+        # Return the explicitly provided display name.
+        return name.strip()
+
+    # No display name provided, use the local part as a fallback.
+    local_part = address.split("@")[0]
+    # Replace common separators with spaces and title-case the result.
+    return local_part.replace(".", " ").replace("_", " ").title()
+
+
+def get_geolocation_details(
+    query: str,
+    country_codes: Optional[str] = ["SG"],
+) -> Optional[Dict[str, Dict[str, float]]]:
+    """
+    Retrieves the geographic center and bounding box of a country using OpenStreetMap (Nominatim).
+
+    Args:
+        country_name (str): The name of the country (e.g., "Singapore").
+
+    Returns:
+        Optional[Dict]: A dictionary with 'center', 'low', and 'high' lat/lng coordinates,
+                        or None if lookup fails.
+    """
+    geolocator = Nominatim(user_agent="my_geocoder")
+    geocode = RateLimiter(geolocator.geocode, min_delay_seconds=1)
+
+    try:
+        location = geocode(
+            query, exactly_one=True, addressdetails=True, country_codes=country_codes
+        )
+
+        if location and "boundingbox" in location.raw:
+            bounds = location.raw[
+                "boundingbox"
+            ]  # [south_lat, north_lat, west_lng, east_lng]
+
+            return {
+                "center": {
+                    "latitude": location.latitude,
+                    "longitude": location.longitude,
+                },
+                "low": {
+                    "latitude": float(bounds[0]),  # south
+                    "longitude": float(bounds[2]),  # west
+                },
+                "high": {
+                    "latitude": float(bounds[1]),  # north
+                    "longitude": float(bounds[3]),  # east
+                },
+            }
+        else:
+            logging.warning(f"Could not find bounding box for '{query}'.")
+
+    except Exception as e:
+        logging.error("Error retrieving geolocation details for '%s': %s", query, e)
+
+
+def download_pdf_local(pdf_url: str, dest_filepath: str) -> Optional[str]:
     """
     Download a PDF from the given URL and save it locally.
 
     Args:
         pdf_url (str): URL to download the PDF.
-        output_dir (str): Local directory where the PDF should be stored.
-        dest_filename (str): Filename for the saved PDF (without the full path).
+        dest_filepath (str): Full path where the PDF should be saved.
 
     Returns:
         Optional[str]: The full path to the downloaded PDF if successful, else None.
     """
     try:
-        # Ensure the output directory exists.
-        os.makedirs(output_dir, exist_ok=True)
-
-        # Build the full path for the destination file.
-        full_path = os.path.join(output_dir, dest_filename)
-
         # Download the PDF and save it to the specified location.
         response = requests.get(pdf_url, stream=True, timeout=30)
         response.raise_for_status()
-        with open(full_path, "wb") as f:
+        with open(dest_filepath, "wb") as f:
             for chunk in response.iter_content(chunk_size=8192):
                 f.write(chunk)
 
-        return full_path
+        return dest_filepath
     except Exception as e:
         logging.error("Error downloading PDF locally from %s: %s", pdf_url, e)
-        return None
 
 
 def download_pdf_s3(

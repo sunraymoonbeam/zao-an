@@ -1,0 +1,45 @@
+credentials_path: ./keys/credentials.json
+token_path: ./keys/token.json
+email:
+  recipients:
+  - lowrenhwa88+1@gmail.com
+  - lowrenhwa88+2@gmail.com
+  sender: lowrenhwa88@gmail.com
+  subject: Good Morning Newsletter
+  email_format: html
+api:
+  location: Singapore
+  country_code: SG
+  horoscope_sign: scorpio
+  text_search:
+    text_query: cafes
+    place_type: null
+    page_size: 10
+    min_rating: null
+    price_levels:
+    - PRICE_LEVEL_INEXPENSIVE
+    - PRICE_LEVEL_MODERATE
+  nearby_search:
+    random_location: true
+    coordinates:
+    - 1.3521
+    - 103.8198
+    place_types:
+    - restaurant
+    - tourist_attraction
+    - art_gallery
+    search_radius: 1000
+    page_size: 10
+arxiv:
+  query: Image Segmentation
+  max_results: 5
+  random_k: 3
+  download_papers: true
+  storage_type: local
+  storage_dir: data/arvix_papers
+s3_config:
+  bucket: your-bucket-name
+  region: us-east-1
+  access_key_id: YOUR_ACCESS_KEY
+  secret_access_key: YOUR_SECRET_KEY
+  base_path: papers
