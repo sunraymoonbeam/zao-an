@@ -10,8 +10,7 @@ token_path: "./keys/token.json"             # Path to the token file for Gmail A
 # Email settings
 email:
   recipients: # Email addresses of recipients
-  - "lowrenhwa88+1@gmail.com" 
-  - "lowrenhwa88+2@gmail.com"
+  - "lowrenhwa88@gmail.com" 
   sender: "lowrenhwa88@gmail.com" # The authorized sender email address
   subject: "Good Morning Newsletter" # Subject of the email   
   email_format: html # HTML or Text

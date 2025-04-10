@@ -2,8 +2,7 @@ credentials_path: ./keys/credentials.json
 token_path: ./keys/token.json
 email:
   recipients:
-  - lowrenhwa88+1@gmail.com
-  - lowrenhwa88+2@gmail.com
+  - lowrenhwa88@gmail.com
   sender: lowrenhwa88@gmail.com
   subject: Good Morning Newsletter
   email_format: html

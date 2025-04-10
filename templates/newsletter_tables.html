@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Good Morning {{ recipient_name }}! - {{ date }}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,400;0,700;1,400&family=Oswald:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* Basic Resets & Font Loading Fallback */
+        body { width: 100% !important; margin: 0 !important; padding: 0 !important; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+        img { border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic; }
+        table, td { border-collapse: collapse !important; mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+        /* Custom Scrollbar (Webkit only) */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.1); border-radius: 3px;}
+        ::-webkit-scrollbar-thumb { background: #ffafcc; border-radius: 3px;}
+        ::-webkit-scrollbar-thumb:hover { background: #ffc8dd; }
+    </style>
+</head>
+
+<body style="width: 100% !important; margin: 0 !important; padding: 10px !important; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; background-color: #cdb4db; font-family: 'Merriweather', serif; line-height: 1.5; color: #444;
+    /* --- BACKGROUND IMAGE URL --- */
+    background-image: url('{{ background_image_url }}'); /* <-- PUT YOUR IMAGE URL HERE */
+    /* -------------------------- */
+    background-size: cover; background-position: center; background-repeat: no-repeat; background-attachment: fixed;">
+
+    <!-- Main Container Table -->
+    <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 700px; margin: 0 auto; background-color: rgba(255, 255, 255, 0.9); border: 2px solid #ffafcc; border-radius: 8px; box-shadow: 0 4px 10px rgba(255, 175, 204, 0.2); overflow: hidden;">
+        <tr>
+            <td style="padding: 6px;">
+                <!-- Row 1: Good Morning (30%) and Solar Schedule + Cat (70%) -->
+                <table border="0" cellpadding="0" cellspacing="6" width="100%" style="margin-bottom: 6px;">
+                    <tr>
+                        <!-- Good Morning Cell (30%) -->
+                        <td width="30%" valign="top">
+                            <table border="0" cellpadding="0" cellspacing="0" width="100%" height="100%" style="background-color: #ffc8dd; border: 1px solid #ffafcc; border-radius: 6px; color: #444; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                                <tr>
+                                    <td style="padding: 12px;" valign="top">
+                                        <h1 style="font-family: 'Oswald', sans-serif; font-weight: 700; font-size: 20px; margin: 0 0 6px 0; line-height: 1.2; text-align: center; border-bottom: 1px solid rgba(255, 175, 204, 0.6); padding-bottom: 5px; color: #ffafcc;">Good Morning {{ recipient_name }}!!!</h1>
+                                        <p style="font-size: 11px; text-align: center; margin: 0 0 8px 0;">{{ datetime }}</p>
+                                        <p style="font-style: italic; font-size: 13px; margin: 8px auto 0; text-align: center; max-width: 95%;">
+                                            <em>{{ zen_quote.quote }}</em>
+                                            <cite style="display: block; text-align: right; font-size: 11px; font-style: normal; margin-top: 4px;">— {{ zen_quote.author }}</cite>
+                                        </p>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+
+                        <!-- Solar Schedule & Cat Cell (70%) -->
+                        <td width="70%" valign="top">
+                            <!-- Solar Schedule -->
+                            <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #bde0fe; border: 1px solid #a2d2ff; border-radius: 6px; margin-bottom: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                                <tr>
+                                    <td style="padding: 12px;">
+                                        <h2 style="font-family: 'Oswald', sans-serif; font-weight: 700; font-size: 15px; margin: 0 0 8px 0; line-height: 1.2; text-align: center; border-bottom: 1px solid rgba(255, 175, 204, 0.4); padding-bottom: 4px; color: #ffafcc;"><span style="margin-right: 6px;">☀️</span> Perfect Timing Guide</h2>
+
+                                        <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-bottom: 6px;">
+                                            <tr>
+                                                <td style="font-size: 12px; width: 140px;"><strong><span style="margin-right: 5px;">🌅</span> Sunrise:</strong></td>
+                                                <td style="font-size: 12px; text-align: right;">{{ solar_schedule.sunrise }}</td>
+                                            </tr>
+                                        </table>
+
+                                        <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-bottom: 6px;">
+                                            <tr>
+                                                <td style="font-size: 12px; width: 140px;"><strong><span style="margin-right: 5px;">✨</span> Best Photo Light:</strong></td>
+                                                <td style="font-size: 12px; text-align: right;">{{ solar_schedule.golden_hour }}</td>
+                                            </tr>
+                                        </table>
+
+                                        <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                                            <tr>
+                                                <td style="font-size: 12px; width: 140px;"><strong><span style="margin-right: 5px;">🌇</span> Sunset:</strong></td>
+                                                <td style="font-size: 12px; text-align: right;">{{ solar_schedule.sunset }}</td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <!-- Daily Cat -->
+                            <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #cdb4db; border: 1px solid #ffafcc; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                                <tr>
+                                    <td style="padding: 12px;">
+                                        <h2 style="font-family: 'Oswald', sans-serif; font-weight: 700; font-size: 15px; margin: 0 0 8px 0; line-height: 1.2; text-align: center; border-bottom: 1px solid rgba(255, 175, 204, 0.4); padding-bottom: 4px; color: #ffafcc;"><span style="margin-right: 6px;">🐾</span> Today's Cute Cat</h2>
+                                        <div style="text-align: center; margin-top: 5px;">
+                                            <img src="{{ cat_gif }}" alt="Cat of the day" style="max-width: 100%; height: auto; border-radius: 5px; border: 1px solid #ffafcc;">
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+
+                <!-- Row 2: Research Papers (60%) and Word/Fact/Horoscope (40%) -->
+                <table border="0" cellpadding="0" cellspacing="6" width="100%" style="margin-bottom: 6px;">
+                    <tr>
+                        <!-- Research Papers (60%) -->
+                        <td width="60%" valign="top">
+                            <table border="0" cellpadding="0" cellspacing="0" width="100%" height="100%" style="background-color: #a2d2ff; border: 1px solid #bde0fe; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                                <tr>
+                                    <td style="padding: 12px;" valign="top">
+                                        <h2 style="font-family: 'Oswald', sans-serif; font-weight: 700; font-size: 15px; margin: 0 0 8px 0; line-height: 1.2; text-align: center; border-bottom: 1px solid rgba(255, 175, 204, 0.4); padding-bottom: 4px; color: #ffafcc;"><span style="margin-right: 6px;">🔭</span> Latest Research: {{ arxiv_query | capitalize }}</h2>
+
+                                        {% if arxiv_papers %}
+                                        <div style="max-height: 320px; overflow-y: auto; scrollbar-width: thin; scrollbar-color: #ffafcc #a2d2ff; padding-right: 5px;">
+                                            <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                                                {% for paper in arxiv_papers[:3] %}
+                                                <tr>
+                                                    <td style="padding-bottom: 8px; border-bottom: 1px dashed rgba(255, 175, 204, 0.3); {% if loop.last %}border-bottom: none; padding-bottom: 0;{% endif %}">
+                                                        <span style="font-weight: bold; font-size: 12px; margin-bottom: 3px; color: #ffafcc; display: block;">{{ paper.title }}</span>
+                                                        <div style="max-height: 140px; overflow-y: auto; margin-bottom: 4px; padding-right: 5px;">
+                                                            <p style="font-size: 11px; margin-bottom: 3px; line-height: 1.4;">{{ paper.abstract }}</p>
+                                                        </div>
+                                                        <p style="font-size: 10px; margin: 0;">
+                                                            <span style="color: rgba(255, 175, 204, 0.7);">{{ paper.published }}</span> |
+                                                            <a href="{{ paper.pdf_link }}" target="_blank" style="color: #ffafcc; text-decoration: none; font-weight: bold;">PDF</a>
+                                                        </p>
+                                                    </td>
+                                                </tr>
+                                                {% endfor %}
+                                            </table>
+                                        </div>
+                                        {% else %}
+                                        <p style="color: rgba(255, 175, 204, 0.7); text-align: center; margin: 0;">No new papers found for "{{ arxiv_query }}".</p>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+
+                        <!-- Word/Fact/Horoscope Stack (40%) -->
+                        <td width="40%" valign="top">
+                            <!-- Word of the Day -->
+                            <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #ffafcc; border: 1px solid #ffc8dd; border-radius: 6px; color: #fff; margin-bottom: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                                <tr>
+                                    <td style="padding: 12px;">
+                                        <h2 style="font-family: 'Oswald', sans-serif; font-weight: 700; font-size: 15px; margin: 0 0 8px 0; line-height: 1.2; text-align: center; border-bottom: 1px solid rgba(255, 255, 255, 0.4); padding-bottom: 4px; color: #fff;"><span style="margin-right: 6px;">📖</span> Word of the Day</h2>
+                                        <strong style="font-family: 'Oswald', sans-serif; font-size: 15px; color: #fff; text-transform: uppercase; display: block; margin-bottom: 2px; text-align: center;">{{ wod.word }}</strong>
+                                        <span style="text-align: center; display: block; margin-bottom: 5px; font-size: 10px; color: rgba(255, 255, 255, 0.8);">({{ wod.part_of_speech }})</span>
+                                        <p style="font-size: 12px; margin: 0;">{{ wod.definition }}</p>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <!-- Interesting Fact -->
+                            <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #bde0fe; border: 1px solid #a2d2ff; border-radius: 6px; margin-bottom: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                                <tr>
+                                    <td style="padding: 12px;">
+                                        <h2 style="font-family: 'Oswald', sans-serif; font-weight: 700; font-size: 15px; margin: 0 0 8px 0; line-height: 1.2; text-align: center; border-bottom: 1px solid rgba(255, 175, 204, 0.4); padding-bottom: 4px; color: #ffafcc;"><span style="margin-right: 6px;">💡</span> Today's Interesting Fact</h2>
+                                        <div style="max-height: 90px; overflow-y: auto; scrollbar-width: thin; scrollbar-color: #ffafcc #bde0fe;">
+                                            <p style="font-size: 12px; margin: 0;">{{ interesting_fact }}</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <!-- Horoscope -->
+                            <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #cdb4db; border: 1px solid #ffafcc; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                                <tr>
+                                    <td style="padding: 12px;">
+                                        <h2 style="font-family: 'Oswald', sans-serif; font-weight: 700; font-size: 15px; margin: 0 0 8px 0; line-height: 1.2; text-align: center; border-bottom: 1px solid rgba(255, 175, 204, 0.4); padding-bottom: 4px; color: #ffafcc;"><span style="margin-right: 6px;">✨</span> {{ horoscope.sign }} Horoscope</h2>
+                                        <div style="max-height: 90px; overflow-y: auto; scrollbar-width: thin; scrollbar-color: #ffafcc #cdb4db;">
+                                            <p style="font-size: 11px; line-height: 1.4; margin-bottom: 6px;">{{ horoscope.prediction }}</p>
+                                        </div>
+                                        <p style="font-size: 10px; line-height: 1.3; text-align: center; color: rgba(255, 175, 204, 0.8); margin: 0;">{{ horoscope.date }}</p>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+
+                <!-- Row 3: Recipe (50%) and Places to Explore (50%) -->
+                <table border="0" cellpadding="0" cellspacing="6" width="100%" style="margin-bottom: 6px;">
+                    <tr>
+                        <!-- Recipe (50%) -->
+                        <td width="50%" valign="top">
+                            <table border="0" cellpadding="0" cellspacing="0" width="100%" height="100%" style="background-color: #ffc8dd; border: 1px solid #ffafcc; border-radius: 6px; color: #444; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                                <tr>
+                                    <td style="padding: 12px;" valign="top">
+                                        <h2 style="font-family: 'Oswald', sans-serif; font-weight: 700; font-size: 15px; margin: 0 0 8px 0; line-height: 1.2; text-align: center; border-bottom: 1px solid rgba(255, 175, 204, 0.6); padding-bottom: 4px; color: #ffafcc;"><span style="margin-right: 6px;">🍳</span> Recipe of the Day</h2>
+                                        <p style="text-align: center; font-size: 13px; font-weight: bold; margin-bottom: 8px; color: #ffafcc;">{{ recipe.name }}</p>
+
+                                        <a href="{{ recipe.source_url or '#' }}" target="_blank" style="text-align: center; display: block; margin-bottom: 8px;">
+                                            {% if recipe.image_url %}
+                                            <img src="{{ recipe.image_url }}" alt="Image of {{ recipe.name }}" style="max-width: 90%; height: auto; margin: 0 auto; border: 1px solid #ffafcc; border-radius: 4px;">
+                                            {% endif %}
+                                        </a>
+
+                                        <div style="max-height: 150px; overflow-y: auto; margin-bottom: 5px; padding-right: 5px; scrollbar-width: thin; scrollbar-color: #ffafcc #ffc8dd;">
+                                            <ol style="font-size: 11px; line-height: 1.4; padding-left: 18px; margin: 8px 0;">
+                                                {% set instructions_list = recipe.instructions.splitlines() %}
+                                                {% for instruction in instructions_list %}
+                                                    {% if instruction.strip() %}<li style="margin-bottom: 4px;">{{ instruction.strip() }}</li>{% endif %}
+                                                {% endfor %}
+                                            </ol>
+                                        </div>
+
+                                        {% if recipe.source_url %}
+                                        <a href="{{ recipe.source_url }}" target="_blank" style="display: block; text-align: center; font-size: 11px; margin-top: 8px; color: #ffafcc; text-decoration: underline; font-weight: bold;">View Full Recipe</a>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+
+                        <!-- Places to Explore (50%) -->
+                        <td width="50%" valign="top">
+                            <table border="0" cellpadding="0" cellspacing="0" width="100%" height="100%" style="background-color: #a2d2ff; border: 1px solid #bde0fe; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                                <tr>
+                                    <td style="padding: 12px;" valign="top">
+                                        <h2 style="font-family: 'Oswald', sans-serif; font-weight: 700; font-size: 15px; margin: 0 0 12px 0; line-height: 1.2; text-align: center; border-bottom: 1px solid rgba(255, 175, 204, 0.4); padding-bottom: 4px; color: #ffafcc;"><span style="margin-right: 6px;">🗺️</span> Nearby Places to Explore</h2>
+
+                                        {% if restaurants %}
+                                        <div style="max-height: 380px; overflow-y: auto; scrollbar-width: thin; scrollbar-color: #ffafcc #a2d2ff; padding-right: 5px;">
+                                            <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                                                {% for restaurant in restaurants[:3] %}
+                                                <tr>
+                                                    <td style="padding-bottom: 12px; border-bottom: 1px dashed rgba(255, 175, 204, 0.3); text-align: center; {% if loop.last %}border-bottom: none; padding-bottom: 0;{% endif %}">
+                                                        <span style="font-weight: bold; font-size: 13px; margin-bottom: 5px; display: block; color: #ffafcc;">{{ restaurant.name }}</span>
+                                                        <img src="{% if restaurant.photo_base64 %}data:image/jpeg;base64,{{ restaurant.photo_base64 }}{% else %}https://via.placeholder.com/100x100.png?text=IMG{% endif %}" alt="" style="width: 100px; height: 100px; margin: 0 auto 6px; border-radius: 4px; object-fit: cover; border: 1px solid #ffafcc;">
+
+                                                        <div>
+                                                            <div style="margin-bottom: 4px; display: block; text-align: center;"> <!-- Changed to block for better centering control -->
+                                                                <div style="display: inline-block; white-space: nowrap; line-height: 1;">
+                                                                    {% set r = restaurant.rating|default(0)|round|int %}
+                                                                    {% for i in range(r) %}<span style="color: #ffafcc; font-size: 14px;">⭐</span>{% endfor %}
+                                                                    {% if r < 5 %}
+                                                                        {% for i in range(5-r) %}<span style="color: #ffafcc; opacity: 0.3; font-size: 14px;">⭐</span>{% endfor %}
+                                                                    {% endif %}
+                                                                </div>
+                                                                <span style="color: rgba(255, 175, 204, 0.8); font-size: 10px; display: block; line-height: 1.2;">({{ restaurant.rating|round(1) if restaurant.rating else 'N/A' }}) {{ restaurant.user_ratings_total or '?' }} ratings</span>
+                                                            </div>
+
+                                                            <p style="font-size: 10px; line-height: 1.3; margin-bottom: 4px; color: rgba(0, 0, 0, 0.6);">{{ restaurant.address }}</p>
+
+                                                            {% if restaurant.reviews %}
+                                                            <div>
+                                                                <h4 style="font-family: 'Oswald', sans-serif; font-weight: 400; font-size: 11px; color: #ffafcc; margin: 5px 0 3px; padding-top: 4px; border-top: 1px dotted rgba(255, 175, 204, 0.4); text-transform: uppercase; text-align: center;">Reviews:</h4>
+                                                                <div style="max-height: 90px; overflow-y: auto; scrollbar-width: thin; scrollbar-color: #ffafcc #a2d2ff; padding: 0 3px;">
+                                                                    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                                                                        {% for review in restaurant.reviews %}
+                                                                        <tr>
+                                                                            <td style="padding-bottom: 4px; text-align: center;">
+                                                                                <div style="margin-bottom: 2px; display: block; line-height: 1.1;">
+                                                                                    <span style="font-weight: bold; font-size: 10px;">{{ review.reviewer_name or 'Anon' }}:</span>
+                                                                                    <div style="color: #ffafcc; margin-left: 4px; display: inline-block; white-space: nowrap; font-size: 12px;">
+                                                                                        {% set rr = review.rating|default(0)|round|int %}
+                                                                                        {% for i in range(rr) %}⭐{% endfor %}
+                                                                                        {% if rr < 5 %}
+                                                                                            {% for i in range(5-rr) %}<span style="opacity: 0.3;">⭐</span>{% endfor %}
+                                                                                        {% endif %}
+                                                                                    </div>
+                                                                                </div>
+                                                                                <span style="font-style: italic; color: #555; display: block; text-align: center; font-size: 10px; line-height: 1.3;">"{{ review.text | truncate(80) }}"</span>
+                                                                            </td>
+                                                                        </tr>
+                                                                        {% endfor %}
+                                                                    </table>
+                                                                </div>
+                                                            </div>
+                                                            {% endif %}
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                                {% endfor %}
+                                            </table>
+                                        </div>
+                                        {% else %}
+                                        <p style="color: rgba(255, 175, 204, 0.8); text-align: center; margin: 0;">No matching places found nearby.</p>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+
+                <!-- Footer -->
+                <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                    <tr>
+                        <td style="text-align: center; padding: 12px 10px 8px; border-top: 2px solid #ffc8dd; color: #ffafcc; font-size: 12px;">
+                            <p style="margin: 0;">Have a wonderful day!</p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+
+</body>
+</html>
