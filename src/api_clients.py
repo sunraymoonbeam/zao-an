@@ -2,6 +2,7 @@ import logging
 import os
 import random
 from typing import Any, Dict, List, Optional
+import base64
 
 import requests
 from bs4 import BeautifulSoup
@@ -414,39 +415,66 @@ def get_places(
 
         for place in places:
             processed_place = {
-                "name": place["displayName"]["text"],
-                "address": place["formattedAddress"],
-                "rating": place.get("rating", None),
-                "user_ratings_total": place.get("userRatingCount", None),
+                "name": place.get("displayName", {}).get("text", "N/A"),
+                "address": place.get("formattedAddress", "N/A"),
+                "rating": place.get("rating"),
+                "user_ratings_total": place.get("userRatingCount"),
+                "price_level": place.get("priceLevel"),
+                "photo_base64": None,  # Initialize photo data key
             }
 
-            # Add one photo URL (if available)
-            photo_url = None
+            # --- Fetch and Encode Photo ---
             photos = place.get("photos", [])
             if photos:
-                photo_name = photos[0].get("name")
+                photo_name = photos[0].get(
+                    "name"
+                )  # Get resource name of the first photo
                 if photo_name:
-                    photo_url = f"https://places.googleapis.com/v1/{photo_name}/media?maxWidthPx=400&key={api_key}"
+                    photo_media_url = f"https://places.googleapis.com/v1/{photo_name}/media?maxWidthPx=400&key={api_key}"
+                    try:
+                        logging.debug(
+                            f"Fetching photo for {processed_place['name']}..."
+                        )
+                        photo_response = requests.get(photo_media_url, timeout=10)
+                        photo_response.raise_for_status()
 
-            processed_place["photo_url"] = photo_url
+                        # Get image bytes and encode to Base64 string
+                        image_bytes = photo_response.content
+                        base64_image = base64.b64encode(image_bytes).decode("utf-8")
+                        processed_place["photo_base64"] = base64_image
+                        logging.debug(
+                            f"Successfully encoded photo for {processed_place['name']}"
+                        )
 
-            # Add up to 3 reviews (if available)
+                    except requests.exceptions.RequestException as photo_err:
+                        logging.warning(
+                            f"Failed to download photo for {processed_place['name']} from {photo_name}: {photo_err}"
+                        )
+                    except Exception as enc_err:
+                        logging.warning(
+                            f"Failed to encode photo for {processed_place['name']}: {enc_err}"
+                        )
+
+            # --- Process Reviews ---
             reviews = []
             for review in place.get("reviews", [])[:3]:
-                reviews.append(
-                    {
-                        "reviewer_name": review.get("authorAttribution", {}).get(
-                            "displayName", "Anonymous"
-                        ),
-                        "text": review.get("text", {}).get("text", ""),
-                        "rating": review.get("rating", None),
-                    }
-                )
-
+                review_text = review.get("text", {}).get("text")
+                if review_text:  # Only add if text exists
+                    reviews.append(
+                        {
+                            "reviewer_name": review.get("authorAttribution", {}).get(
+                                "displayName", "Anonymous"
+                            ),
+                            "text": review_text,
+                            "rating": review.get("rating"),
+                        }
+                    )
             processed_place["reviews"] = reviews
+
             processed_places.append(processed_place)
 
-        return processed_places
+        # Return results up to the originally requested page_size (or less if API returned fewer)
+        return processed_places[:page_size]
 
     except Exception as e:
         logging.error(

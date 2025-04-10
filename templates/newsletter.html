@@ -273,56 +273,59 @@
                         </div>
                     </div>
 
+
                     <!-- 5. Restaurant Recommendations -->
                     {% if restaurants %}
                     <div class="section" style="background-color: rgba(245, 255, 250, 0.85); border-color: #a5d6a7;"> {# MintCream Translucent #}
-                         <h2><span class="icon">🗺️</span> Restaurants Serving "{{ text_query }}"</h2>
-                         <table class="restaurant-table" border="0" cellpadding="0" cellspacing="0" width="100%">
-                             <tbody>
-                                 {% for restaurant in restaurants[:3] %}
-                                 <tr>
-                                     <td class="restaurant-photo-cell" width="110">
-                                         {% if restaurant.photo_url %}
-                                         <img src="{{ restaurant.photo_url }}" alt="Photo of {{ restaurant.name }}" class="restaurant-photo" width="100">
-                                         {% else %}
-                                         <img src="https://via.placeholder.com/100x75.png?text=Image" alt="Placeholder" class="restaurant-photo" width="100">
-                                         {% endif %}
-                                     </td>
-                                     <td class="restaurant-details">
-                                         <h3>{{ restaurant.name }}</h3>
-                                         <p class="address">{{ restaurant.address }}</p>
-                                         <p class="rating">
-                                             <span class="stars">
-                                                 {% set rating_val = restaurant.rating|default(0)|round|int %}
-                                                 {% for i in range(rating_val) %}⭐{% endfor %}{% for i in range(5-rating_val) %}<span style="opacity: 0.3;">⭐</span>{% endfor %}
-                                             </span>
+                      <h2><span class="icon">🗺️</span> Places Serving "{{ recipe.name }}"</h2>
+                          <table class="restaurant-table" border="0" cellpadding="0" cellspacing="0" width="100%">
+                              <tbody>
+                                  {% for restaurant in restaurants[:3] %}
+                                  <tr>
+                                      <td class="restaurant-photo-cell" width="130" style="width: 130px;"> {# Matched width attribute #}
+                                          {# MODIFIED IMG SRC for Base64 #}
+                                          {% if restaurant.photo_base64 %}
+                                          <img src="data:image/jpeg;base64,{{ restaurant.photo_base64 }}" alt="Photo of {{ restaurant.name }}" class="restaurant-photo" width="120">
+                                          {# Assuming JPEG, most common. Could try image/png if needed #}
+                                          {% else %}
+                                          <img src="https://via.placeholder.com/120x90.png?text=Image" alt="Placeholder" class="restaurant-photo" width="120">
+                                          {% endif %}
+                                      </td>
+                                      <td class="restaurant-details">
+                                          <h3>{{ restaurant.name }}</h3>
+                                          <p class="address">{{ restaurant.address }}</p>
+                                          <p class="rating">
+                                              <span class="stars">
+                                                  {% set rating_val = restaurant.rating|default(0)|round|int %}
+                                                  {% for i in range(rating_val) %}⭐{% endfor %}{% for i in range(5-rating_val) %}<span style="opacity: 0.3;">⭐</span>{% endfor %}
+                                              </span>
                                               ({{ restaurant.rating|round(1) if restaurant.rating else 'N/A' }}) - {{ restaurant.user_ratings_total or '?' }} Ratings
-                                         </p>
-                                         {% if restaurant.reviews %}
-                                             <h4>Reviews:</h4>
-                                             <ul>
-                                             {% for review in restaurant.reviews %}
-                                                 <li>
-                                                      <div class="reviewer-line"> {# Wrap reviewer and stars #}
+                                          </p>
+                                          {% if restaurant.reviews %}
+                                              <h4>Reviews:</h4>
+                                              <ul>
+                                              {% for review in restaurant.reviews %}
+                                                  <li>
+                                                      <div class="reviewer-line">
                                                           <span class="reviewer">{{ review.reviewer_name or 'Anonymous' }}:</span>
                                                           <span class="review-rating">
-                                                             {% set review_rating_val = review.rating|default(0)|round|int %}
-                                                             {% for i in range(review_rating_val) %}⭐{% endfor %}{% for i in range(5-review_rating_val) %}<span style="opacity: 0.3;">⭐</span>{% endfor %}
-                                                         </span>
+                                                              {% set review_rating_val = review.rating|default(0)|round|int %}
+                                                              {% for i in range(review_rating_val) %}⭐{% endfor %}{% for i in range(5-review_rating_val) %}<span style="opacity: 0.3;">⭐</span>{% endfor %}
+                                                          </span>
                                                       </div>
                                                       <span class="review-text">"{{ review.text[:200] }}{% if review.text|length > 200 %}..."{% endif %}"</span>
-                                                 </li>
-                                             {% endfor %}
-                                             </ul>
-                                         {% endif %}
-                                     </td>
-                                 </tr>
-                                 {% endfor %}
-                             </tbody>
-                         </table>
-                         {% else %}
-                             <p>Could not find suitable restaurants for "{{ recipe.name }}" nearby.</p>
-                         {% endif %}
+                                                  </li>
+                                              {% endfor %}
+                                              </ul>
+                                          {% endif %}
+                                      </td>
+                                  </tr>
+                                  {% endfor %}
+                              </tbody>
+                          </table>
+                      {% else %}
+                          <p>Could not find suitable restaurants for "{{ recipe.name }}" nearby.</p>
+                      {% endif %}
                     </div>
 
                     <!-- 6. ArXiv Papers -->
