@@ -1,4 +1,14 @@
+"""
+Utilities Module
+
+This module provides utility functions for:
+    - Extracting display names from email addresses.
+    - Geolocation queries using Nominatim (OpenStreetMap).
+    - Downloading PDFs locally or uploading to AWS S3.
+"""
+
 import logging
+import os
 from email.utils import parseaddr
 from typing import Dict, Optional
 
@@ -6,22 +16,62 @@ import boto3
 import requests
 from geopy.extra.rate_limiter import RateLimiter
 from geopy.geocoders import Nominatim
+import yaml
+
+# Configure logging
+logger = logging.getLogger(__name__)
 
 
-def get_display_name(email_string: str) -> str:
-    """Extracts the display name from an email address.
+def setup_logging(
+    logging_config_path="./conf/logging.yaml",
+    default_level=logging.INFO,
+):
+    """Set up configuration for logging utilities.
 
-    If the email string includes a display name, return it.
-    Otherwise, try to infer a name from the email's local part.
+    Parameters
+    ----------
+    logging_config_path : str, optional
+        Path to YAML file containing configuration for Python logger,
+        by default "./config/logging_config.yaml"
+    default_level : logging object, optional, by default logging.INFO
+
     """
-    name, address = parseaddr(email_string)
+    try:
+        os.makedirs("logs/", exist_ok=True)
+        with open(logging_config_path, encoding="utf-8") as file:
+            log_config = yaml.safe_load(file.read())
+        logging.config.dictConfig(log_config)
+
+    except Exception as error:
+        logging.basicConfig(
+            format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+            level=default_level,
+        )
+        logger.info(error)
+        logger.info("Logging config file is not found. Basic config is being used.")
+
+
+def get_display_name(email_address: str) -> str:
+    """
+    Extracts the display name from an email address.
+
+    If the provided email string includes a display name, it is returned.
+    Otherwise, the function infers a display name from the email's local part.
+
+    Args:
+        email_address (str): The full email address, which may contain a display name.
+
+    Returns:
+        str: The extracted or inferred display name.
+    """
+    name, address = parseaddr(email_address)
     if name:
         # Return the explicitly provided display name.
         return name.strip()
 
-    # No display name provided, use the local part as a fallback.
+    # Fallback: use the local part of the address (before the @ symbol).
     local_part = address.split("@")[0]
-    # Replace common separators with spaces and title-case the result.
+    # Replace common separators and convert to title case.
     return local_part.replace(".", " ").replace("_", " ").title()
 
 
@@ -30,14 +80,21 @@ def get_geolocation_details(
     country_codes: Optional[str] = ["SG"],
 ) -> Optional[Dict[str, Dict[str, float]]]:
     """
-    Retrieves the geographic center and bounding box of a country using OpenStreetMap (Nominatim).
+    Retrieves geolocation details such as the center and bounding box for a location.
+
+    Uses Nominatim (OpenStreetMap) for geocoding. The returned dictionary contains:
+        - "center": Latitude and longitude of the location.
+        - "low": Southern and western bounds.
+        - "high": Northern and eastern bounds.
 
     Args:
-        country_name (str): The name of the country (e.g., "Singapore").
+        query (str): The location query (e.g., "Singapore").
+        country_codes (Optional[str], optional): Country code(s) to restrict the search.
+            Defaults to ["SG"].
 
     Returns:
-        Optional[Dict]: A dictionary with 'center', 'low', and 'high' lat/lng coordinates,
-                        or None if lookup fails.
+        Optional[Dict[str, Dict[str, float]]]: A dictionary with 'center', 'low', and 'high' coordinates,
+        or None if the lookup fails.
     """
     geolocator = Nominatim(user_agent="my_geocoder")
     geocode = RateLimiter(geolocator.geocode, min_delay_seconds=1)
@@ -46,78 +103,76 @@ def get_geolocation_details(
         location = geocode(
             query, exactly_one=True, addressdetails=True, country_codes=country_codes
         )
-
         if location and "boundingbox" in location.raw:
             bounds = location.raw[
                 "boundingbox"
-            ]  # [south_lat, north_lat, west_lng, east_lng]
-
+            ]  # Format: [south_lat, north_lat, west_lng, east_lng]
             return {
                 "center": {
                     "latitude": location.latitude,
                     "longitude": location.longitude,
                 },
                 "low": {
-                    "latitude": float(bounds[0]),  # south
-                    "longitude": float(bounds[2]),  # west
+                    "latitude": float(bounds[0]),  # South
+                    "longitude": float(bounds[2]),  # West
                 },
                 "high": {
-                    "latitude": float(bounds[1]),  # north
-                    "longitude": float(bounds[3]),  # east
+                    "latitude": float(bounds[1]),  # North
+                    "longitude": float(bounds[3]),  # East
                 },
             }
         else:
-            logging.warning(f"Could not find bounding box for '{query}'.")
-
+            logging.warning("Could not find bounding box for '%s'.", query)
     except Exception as e:
         logging.error("Error retrieving geolocation details for '%s': %s", query, e)
+
+    return None
 
 
 def download_pdf_local(pdf_url: str, dest_filepath: str) -> Optional[str]:
     """
-    Download a PDF from the given URL and save it locally.
+    Downloads a PDF from a given URL and saves it locally.
 
     Args:
-        pdf_url (str): URL to download the PDF.
+        pdf_url (str): URL from which to download the PDF.
         dest_filepath (str): Full path where the PDF should be saved.
 
     Returns:
         Optional[str]: The full path to the downloaded PDF if successful, else None.
     """
     try:
-        # Download the PDF and save it to the specified location.
         response = requests.get(pdf_url, stream=True, timeout=30)
         response.raise_for_status()
-        with open(dest_filepath, "wb") as f:
+        with open(dest_filepath, "wb") as file_out:
             for chunk in response.iter_content(chunk_size=8192):
-                f.write(chunk)
-
+                file_out.write(chunk)
         return dest_filepath
     except Exception as e:
-        logging.error("Error downloading PDF locally from %s: %s", pdf_url, e)
+        logging.error("Error downloading PDF from %s: %s", pdf_url, e)
+    return None
 
 
 def download_pdf_s3(
-    pdf_url: str, s3_dir: str, dest_filename: str, s3_config: dict
+    pdf_url: str, s3_folder: str, dest_filename: str, s3_config: dict
 ) -> Optional[str]:
     """
-    Download a PDF from the given URL and upload it to S3.
+    Downloads a PDF from a given URL and uploads it to an AWS S3 bucket.
 
     Args:
-        pdf_url (str): URL to download the PDF.
-        s3_folder (str): Folder (prefix) in the S3 bucket where the PDF should be stored.
-        dest_filename (str): Filename to be used for the PDF in S3.
+        pdf_url (str): URL from which to download the PDF.
+        s3_folder (str): Folder (prefix) in the S3 bucket where the PDF will be stored.
+        dest_filename (str): Filename to assign in the S3 bucket.
         s3_config (dict): S3 configuration parameters. Expected keys:
-            - bucket (str): S3 bucket name.
-            - region (str): AWS region.
-            - access_key_id (str): AWS access key ID.
-            - secret_access_key (str): AWS secret access key.
+            - "bucket" (str): S3 bucket name.
+            - "region" (str): AWS region.
+            - "access_key_id" (str): AWS access key ID.
+            - "secret_access_key" (str): AWS secret access key.
 
     Returns:
-        Optional[str]: The S3 object key (path in the bucket) if upload is successful, else None.
+        Optional[str]: The S3 object key (i.e. path in the bucket) if successful, else None.
     """
     try:
-        # Create an S3 client using provided configuration.
+        # Create S3 client.
         s3_client = boto3.client(
             "s3",
             region_name=s3_config.get("region"),
@@ -127,16 +182,14 @@ def download_pdf_s3(
         response = requests.get(pdf_url, stream=True, timeout=30)
         response.raise_for_status()
 
-        # Build the S3 object key.
-        # Ensure s3_folder does not have leading/trailing slashes.
-        s3_dir = s3_dir.strip("/")
-        s3_key = f"{s3_dir}/{dest_filename}"
+        # Ensure the S3 folder has no leading/trailing slashes.
+        s3_folder = s3_folder.strip("/")
+        s3_key = f"{s3_folder}/{dest_filename}"
 
-        # Use upload_fileobj to stream the file directly to S3.
+        # Upload the file directly from response stream.
         s3_client.upload_fileobj(response.raw, s3_config["bucket"], s3_key)
         logging.info("Uploaded PDF to S3 with key: %s", s3_key)
         return s3_key
     except Exception as e:
-        logging.error(
-            "Error downloading or uploading PDF to S3 from %s: %s", pdf_url, e
-        )
+        logging.error("Error downloading or uploading PDF from %s: %s", pdf_url, e)
+    return None

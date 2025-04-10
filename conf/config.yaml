@@ -1,54 +1,66 @@
-# Configuration for the good morning newsletter
+# Configuration for the Good Morning Newsletter
+
 hydra:
   run:
-    dir: "." 
+    # Directory where the task is executed
+    dir: "."
 
-# Credentials for Gmail API
-credentials_path: "./keys/credentials.json" # Path to the credentials file for Gmail API
-token_path: "./keys/token.json"             # Path to the token file for Gmail API
+# Gmail API credentials configuration
+credentials_path: "./keys/credentials.json"  # Path to the credentials file for Gmail API
+token_path: "./keys/token.json"              # Path to the token file for Gmail API
 
-# Email settings
+# Email settings for sending the newsletter
 email:
-  recipients: # Email addresses of recipients
-  - "lowrenhwa88@gmail.com" 
-  sender: "lowrenhwa88@gmail.com" # The authorized sender email address
-  subject: "Good Morning Newsletter" # Subject of the email   
-  email_format: html # HTML or Text
+  recipients:  # List of recipient email addresses
+    - "lowrenhwa88@gmail.com"
+  sender: "lowrenhwa88@gmail.com"            # Authorized sender email address
+  subject: "Good Morning Newsletter"         # Email subject line
+  email_format: html                         # Format of the email content: html or text
 
-# API settings
+# API settings for various functionalities in the newsletter
 api:
+  # Location settings for generating location-based content
   location: "Singapore"
-  country_code: "SG"  # country code for geopy
+  country_code: "SG"                         # Country code for geopy
+
+  # Horoscope settings for including daily horoscopes
   horoscope_sign: "scorpio"
 
+  # Text search settings (e.g., searching for cafes)
   text_search:
-    text_query: "cafes"
-    place_type: null              # e.g., "restaurant", "museum"
-    page_size: 10
-    min_rating: null              # e.g., 4.5
-    price_levels: ["PRICE_LEVEL_INEXPENSIVE", "PRICE_LEVEL_MODERATE"]        
+    text_query: "cafes"                      # Query for text search
+    place_type: null                         # Type of place (e.g., "restaurant" or "museum")
+    page_size: 10                            # Number of results to fetch
+    min_rating: null                         # Minimum rating filter, e.g., 4.5
+    price_levels:
+      - "PRICE_LEVEL_INEXPENSIVE"
+      - "PRICE_LEVEL_MODERATE"
 
+  # Nearby search settings for locations such as restaurants and attractions
   nearby_search:
-    random_location: true             # If true, a random location will be used
-    coordinates: [1.3521, 103.8198]  # Default: Singapore center
-    place_types: ["restaurant", "tourist_attraction", "art_gallery"]     # Can be a list of categories
-    search_radius: 1000            # in meters
-    page_size: 10
+    random_location: true                    # Use a random location if true
+    place_types:
+      - "restaurant"
+      - "tourist_attraction"
+      - "art_gallery"                        # List of categories to include
+    coordinates: [1.3521, 103.8198]          # Default coordinates: center of Singapore
+    search_radius: 1000                      # Search radius in meters
+    page_size: 10                            # Number of nearby results to fetch
 
-
-# ArXiv settings
+# ArXiv settings to include research papers in the newsletter
 arxiv:
-  query: "RAG LLM"  # Change this value to search for a different query
-  max_results: 100              # Maximum number of results to fetch from arXiv
-  random_k: 3                # Number of random papers to include in the email, this should be less than or equal to max_results
-  download_papers: true  # Whether to download the papers
-  storage_type: local  # Options: "local" or "s3"
-  storage_dir: "data/arvix_papers"  # Base path for local storage
+  query: "RAG LLM"                           # Search query for arXiv
+  max_results: 100                           # Maximum number of results to fetch
+  random_k: 3                                # Number of random papers to include in the email 
+                                             # (should be less than or equal to max_results)
+  download_papers: true                      # Flag to indicate whether to download the papers
+  storage_type: local                        # Storage option: "local" or "s3"
+  storage_dir: "data/arvix_papers"           # Base path for local storage of papers
 
-# S3 settings (if storage_type is s3)
+# S3 settings (used if storage_type is set to s3)
 s3_config:
-  bucket: "your-bucket-name"
-  region: "us-east-1"
-  access_key_id: "YOUR_ACCESS_KEY"
-  secret_access_key: "YOUR_SECRET_KEY"
-  base_path: "papers"  # The key prefix inside the bucket
+  bucket: "your-bucket-name"                 # Name of the S3 bucket
+  region: "us-east-1"                        # AWS region where the bucket is located
+  access_key_id: "YOUR_ACCESS_KEY"           # AWS access key ID for S3
+  secret_access_key: "YOUR_SECRET_KEY"       # AWS secret access key for S3
+  base_path: "papers"                        # Key prefix/path inside the bucket

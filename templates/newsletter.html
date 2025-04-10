@@ -1,6 +1,7 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" style="box-sizing: border-box; margin: 0; padding: 0;">
 <head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta charset="utf-8">
     <title>Good Morning {{ recipient_name }}! - {{ date }}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,25 +11,25 @@
     <style>
         /* Reset & Base Styles */
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { 
-            width: 100% !important; 
-            margin: 0 !important; 
-            padding: 10px !important; 
-            -webkit-text-size-adjust: 100%; 
-            -ms-text-size-adjust: 100%; 
-            background-color: #efcfe3; 
+        body {
+            width: 100% !important;
+            margin: 0 !important;
+            padding: 10px !important;
+            -webkit-text-size-adjust: 100%;
+            -ms-text-size-adjust: 100%;
+            background-color: #efcfe3;
             font-family: 'Merriweather', serif;
             line-height: 1.5;
             color: #444;
         }
-        
-        img { 
+
+        img {
             max-width: 100%;
             height: auto;
             display: block;
             border: 0;
         }
-        
+
         /* Bento Grid Container */
         .bento-container {
             max-width: 700px;
@@ -40,7 +41,7 @@
             overflow: hidden;
             padding: 8px;
         }
-        
+
         /* True Bento Grid System */
         .bento-row {
             display: flex;
@@ -48,21 +49,21 @@
             margin-bottom: 8px;
             width: 100%;
         }
-        
+
         .bento-col {
             display: flex;
             flex-direction: column;
             gap: 8px;
         }
-        
+
         .bento-col-60 {
             flex: 60;
         }
-        
+
         .bento-col-40 {
             flex: 40;
         }
-        
+
         /* Bento Grid Items */
         .bento-item {
             background-color: #FFFFFF;
@@ -73,72 +74,72 @@
             height: 100%;
             box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
-        
+
         /* Cell Themes - Using provided color scheme */
         .cell-pink { background-color: #e27396; border-color: #e27396; color: #fff; } /* Dark Pink */
         .cell-lightpink { background-color: #ea9ab2; border-color: #e27396; color: #fff; } /* Light Pink */
         .cell-soft { background-color: #efcfe3; border-color: #ea9ab2; } /* Soft Pink */
         .cell-green { background-color: #eaf2d7; border-color: #eaf2d7; } /* Light Green */
         .cell-blue { background-color: #b3dee2; border-color: #b3dee2; } /* Light Blue */
-        
+
         /* Headers */
-        h1, h2, .item-title { 
-            font-family: 'Oswald', sans-serif; 
-            font-weight: 700; 
+        h1, h2, .item-title {
+            font-family: 'Oswald', sans-serif;
+            font-weight: 700;
             margin-bottom: 10px;
             line-height: 1.2;
             text-align: center;
         }
-        
+
         .cell-pink h1, .cell-pink h2, .cell-lightpink h1, .cell-lightpink h2 {
             color: #fff;
         }
-        
+
         .cell-soft h1, .cell-soft h2, .cell-green h1, .cell-green h2, .cell-blue h1, .cell-blue h2 {
             color: #e27396;
         }
-        
-        h1 { 
-            font-size: 22px; 
-            border-bottom: 1px solid rgba(255, 255, 255, 0.4); 
-            padding-bottom: 6px; 
+
+        h1 {
+            font-size: 22px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+            padding-bottom: 6px;
             margin-bottom: 8px;
         }
-        
+
         .cell-soft h1, .cell-green h1, .cell-blue h1 {
             border-bottom: 1px solid rgba(226, 115, 150, 0.4);
         }
-        
-        h2 { 
-            font-size: 16px; 
-            border-bottom: 1px solid rgba(255, 255, 255, 0.3); 
-            padding-bottom: 4px; 
+
+        h2 {
+            font-size: 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+            padding-bottom: 4px;
             margin-bottom: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
         }
-        
+
         .cell-soft h2, .cell-green h2, .cell-blue h2 {
             border-bottom: 1px solid rgba(226, 115, 150, 0.3);
         }
-        
+
         h2 .icon {
             margin-right: 6px;
         }
-        
+
         /* Typography */
         p { margin: 0 0 8px 0; }
         p:last-child { margin-bottom: 0; }
-        
+
         .text-center { text-align: center; }
-        
+
         .header-subtitle {
             font-size: 12px;
             text-align: center;
             margin-bottom: 10px;
         }
-        
+
         .header-quote {
             font-style: italic;
             font-size: 14px;
@@ -146,7 +147,7 @@
             text-align: center;
             max-width: 95%;
         }
-        
+
         .header-quote cite {
             display: block;
             text-align: right;
@@ -154,16 +155,16 @@
             font-style: normal;
             margin-top: 4px;
         }
-        
+
         .text-sm { font-size: 13px; }
         .text-xs { font-size: 12px; line-height: 1.4; }
         .text-xxs { font-size: 11px; line-height: 1.3; }
         .light-text { color: rgba(255, 255, 255, 0.8); }
-        
+
         .cell-soft .light-text, .cell-green .light-text, .cell-blue .light-text {
             color: rgba(226, 115, 150, 0.7);
         }
-        
+
         /* Solar */
         .solar-info {
             font-size: 13px;
@@ -172,22 +173,22 @@
             justify-content: space-between;
             align-items: center;
         }
-        
+
         .solar-info strong {
             display: inline-flex;
             align-items: center;
             width: 140px;
         }
-        
+
         .solar-info strong .emoji {
             margin-right: 5px;
         }
-        
+
         .solar-info span {
             text-align: right;
             flex-grow: 1;
         }
-        
+
         /* Word of Day */
         .wod-word {
             font-family: 'Oswald', sans-serif;
@@ -198,18 +199,18 @@
             margin-bottom: 2px;
             text-align: center;
         }
-        
+
         .cell-pink .wod-word, .cell-lightpink .wod-word {
             color: #fff;
         }
-        
+
         .wod-pos {
             text-align: center;
             display: block;
             margin-bottom: 6px;
             font-size: 11px;
         }
-        
+
         /* Scrollable Containers */
         .scroll-container {
             overflow-y: auto;
@@ -219,27 +220,27 @@
             margin-bottom: 5px;
             padding-right: 5px;
         }
-        
+
         .scroll-container::-webkit-scrollbar {
             width: 6px;
         }
-        
+
         .scroll-container::-webkit-scrollbar-track {
             background: #efcfe3;
             border-radius: 3px;
         }
-        
+
         .scroll-container::-webkit-scrollbar-thumb {
             background-color: #ea9ab2;
             border-radius: 3px;
         }
-        
+
         /* Recipe */
         .recipe-image-container {
             text-align: center;
             margin-bottom: 10px;
         }
-        
+
         .recipe-image {
             max-width: 90%;
             height: auto;
@@ -247,44 +248,44 @@
             border: 1px solid #ea9ab2;
             border-radius: 4px;
         }
-        
+
         .recipe-list {
             font-size: 11px;
             line-height: 1.3;
             padding-left: 18px;
             margin: 8px 0;
         }
-        
+
         .recipe-list li {
             margin-bottom: 5px;
         }
-        
+
         .recipe-source-link {
             display: block;
             text-align: center;
             font-size: 11px;
             margin-top: 8px;
         }
-        
+
         /* Research Papers */
         .paper-list {
             margin: 0;
             padding: 0;
             list-style: none;
         }
-        
+
         .paper-item {
             margin-bottom: 10px;
             padding-bottom: 10px;
             border-bottom: 1px dashed rgba(226, 115, 150, 0.2);
         }
-        
+
         .paper-item:last-child {
             margin-bottom: 0;
             padding-bottom: 0;
             border-bottom: none;
         }
-        
+
         .paper-title {
             font-weight: bold;
             font-size: 13px;
@@ -292,41 +293,41 @@
             color: #e27396;
             display: block;
         }
-        
+
         .cell-pink .paper-title, .cell-lightpink .paper-title {
             color: #fff;
         }
-        
+
         .paper-abstract {
             font-size: 12px;
             margin-bottom: 3px;
             line-height: 1.4;
         }
-        
+
         .paper-meta {
             font-size: 10px;
         }
-        
+
         /* Restaurant List */
         .resto-list {
             margin: 0;
             padding: 0;
             list-style: none;
         }
-        
+
         .resto-item {
             margin-bottom: 10px;
             padding-bottom: 10px;
             border-bottom: 1px dashed rgba(226, 115, 150, 0.2);
             display: flex;
         }
-        
+
         .resto-item:last-child {
             margin-bottom: 0;
             padding-bottom: 0;
             border-bottom: none;
         }
-        
+
         .resto-photo {
             width: 60px;
             height: 60px;
@@ -336,11 +337,11 @@
             border: 1px solid #ea9ab2;
             flex-shrink: 0;
         }
-        
+
         .resto-details {
             flex-grow: 1;
         }
-        
+
         .resto-name {
             font-weight: bold;
             font-size: 14px;
@@ -348,25 +349,25 @@
             display: block;
             color: #e27396;
         }
-        
+
         .cell-pink .resto-name, .cell-lightpink .resto-name {
             color: #fff;
         }
-        
+
         .resto-address {
             font-size: 11px;
             line-height: 1.3;
             margin-bottom: 2px;
         }
-        
+
         .cell-pink .resto-address, .cell-lightpink .resto-address {
             color: rgba(255, 255, 255, 0.8);
         }
-        
+
         .cell-soft .resto-address, .cell-green .resto-address, .cell-blue .resto-address {
             color: rgba(226, 115, 150, 0.7);
         }
-        
+
         .resto-rating-line {
             font-size: 11px;
             line-height: 1.2;
@@ -374,17 +375,17 @@
             display: flex;
             align-items: center;
         }
-        
+
         .resto-rating-stars {
             color: #e27396;
             margin-right: 3px;
             display: inline-flex;
         }
-        
+
         .cell-pink .resto-rating-stars, .cell-lightpink .resto-rating-stars {
             color: #ffdb58;
         }
-        
+
         /* Reviews */
         .resto-reviews h4 {
             font-family: 'Oswald', sans-serif;
@@ -396,59 +397,59 @@
             border-top: 1px dotted rgba(226, 115, 150, 0.2);
             text-transform: uppercase;
         }
-        
+
         .cell-pink .resto-reviews h4, .cell-lightpink .resto-reviews h4 {
             color: #fff;
             border-top: 1px dotted rgba(255, 255, 255, 0.3);
         }
-        
+
         .resto-reviews ul {
             list-style: none;
             margin: 0;
             padding: 0;
             font-size: 11px;
         }
-        
+
         .resto-reviews li {
             margin-bottom: 4px;
         }
-        
+
         .reviewer-line {
             margin-bottom: 2px;
             display: flex;
             align-items: center;
         }
-        
+
         .reviewer {
             font-weight: bold;
         }
-        
+
         .review-stars {
             color: #e27396;
             margin-left: 4px;
             display: inline-flex;
         }
-        
+
         .cell-pink .review-stars, .cell-lightpink .review-stars {
             color: #ffdb58;
         }
-        
+
         .review-text {
             font-style: italic;
             color: #555;
             display: block;
         }
-        
+
         .cell-pink .review-text, .cell-lightpink .review-text {
             color: rgba(255, 255, 255, 0.9);
         }
-        
+
         /* Cat Image */
         .cat-image-container {
             text-align: center;
             margin-top: 5px;
         }
-        
+
         .cat-image {
             width: 100%;
             max-width: 100%;
@@ -456,14 +457,14 @@
             border-radius: 5px;
             border: 1px solid #ea9ab2;
         }
-        
+
         /* Fix for star ratings horizontal display */
         .stars-container {
             display: inline-flex;
             white-space: nowrap;
             align-items: center;
         }
-        
+
         /* Footer */
         .footer {
             text-align: center;
@@ -473,224 +474,269 @@
             font-size: 12px;
             width: 100%;
         }
-        
+
         a {
             color: #e27396;
             text-decoration: none;
         }
-        
+
         .cell-pink a, .cell-lightpink a {
             color: #fff;
             text-decoration: underline;
         }
-        
+
         /* Media Queries for Responsive Bento Grid */
         @media screen and (max-width: 650px) {
             .bento-row {
                 flex-direction: column;
             }
-            
+
             .bento-col {
                 width: 100%;
+                /* Reset flex basis */
+                flex: 1 1 auto !important;
             }
-            
+
             .bento-col-60, .bento-col-40 {
-                flex: 1;
+                 /* Override specific flex */
+                 flex: 1 1 auto !important;
             }
-            
+
             .bento-item {
-                width: 100%;
+                /* width: 100%; */ /* Already implied by column width */
+                 height: auto !important; /* Allow height to adjust */
             }
-            
+
             h1 {
-                font-size: 20px;
+                font-size: 20px !important;
             }
-            
+
             h2 {
-                font-size: 15px;
+                font-size: 15px !important;
             }
-            
+
             .scroll-container {
-                max-height: 180px;
+                max-height: 180px !important;
             }
-            
+
             .paper-list, .recipe-list, .resto-list {
-                font-size: 12px;
+                font-size: 12px !important;
             }
+
+            /* Adjust flex layouts on mobile if needed */
+            .solar-info {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .solar-info strong { width: auto; margin-bottom: 2px; }
+            .solar-info span { text-align: left; }
+
+             .resto-item {
+                 flex-direction: column;
+             }
+             .resto-photo {
+                 margin-right: 0;
+                 margin-bottom: 8px;
+                 width: 80px; /* Optional: Adjust size */
+                 height: 80px;
+                 align-self: center;
+             }
+             .resto-details {
+                 width: 100%;
+             }
+             .resto-rating-line {
+                 justify-content: center;
+             }
+              .resto-address {
+                 text-align: center;
+              }
+              .resto-reviews {
+                  text-align: left;
+              }
+
         }
     </style>
+<!-- Inlined styles might be slightly different after fixing, but structure is kept -->
 </head>
 
-<body bgcolor="#efcfe3" style="background-color: #efcfe3;">
+<body bgcolor="#efcfe3" style="box-sizing: border-box; width: 100% !important; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; font-family: 'Merriweather', serif; line-height: 1.5; color: #444; margin: 0 !important; padding: 10px !important; background-color: #efcfe3;">
     <!-- Bento Grid Container -->
-    <div class="bento-container">
+    <div class="bento-container" style="box-sizing: border-box; max-width: 700px; background-color: #fff; border-radius: 8px; box-shadow: 0 4px 10px rgba(226, 115, 150, 0.15); overflow: hidden; margin: 0 auto; padding: 8px; border: 2px solid #e27396;">
         <!-- Row 1: "Good Morning" header & quote (60%) | Solar Schedule & Cat GIF stacked (40%) -->
-        <div class="bento-row">
+        <div class="bento-row" style="box-sizing: border-box; display: flex; gap: 8px; width: 100%; margin: 0 0 8px 0; padding: 0;">
             <!-- Good Morning Header Column (60%) -->
-            <div class="bento-col bento-col-60">
-                <div class="bento-item cell-lightpink">
-                    <h1>Good Morning {{ recipient_name }}!!!</h1>
-                    <p class="header-subtitle">{{ datetime }}</p>
-                    <p class="header-quote">
-                        <em>{{ zen_quote.quote }}</em>
-                        <cite>— {{ zen_quote.author }}</cite>
+            <div class="bento-col bento-col-60" style="box-sizing: border-box; display: flex; flex-direction: column; gap: 8px; flex: 60; margin: 0; padding: 0;">
+                <div class="bento-item cell-lightpink" style="box-sizing: border-box; background-color: #ea9ab2; border-radius: 6px; overflow: hidden; height: 100%; box-shadow: 0 2px 4px rgba(0,0,0,0.05); color: #fff; margin: 0; padding: 15px; border: 1px solid #e27396;">
+                    <h1 style="box-sizing: border-box; font-family: 'Oswald', sans-serif; font-weight: 700; line-height: 1.2; color: #fff; font-size: 22px; border-bottom-width: 1px; border-bottom-color: rgba(255, 255, 255, 0.4); border-bottom-style: solid; margin: 0 0 8px 0; padding: 0 0 6px 0; text-align: center;">Good Morning {{ recipient_name }}!!!</h1>
+                    <p class="header-subtitle" style="box-sizing: border-box; font-size: 12px; text-align: center; margin: 0 0 10px 0; padding: 0;">{{ datetime }}</p>
+                    <p class="header-quote" style="box-sizing: border-box; font-style: italic; font-size: 14px; max-width: 95%; margin: 10px auto 0; padding: 0; text-align: center;">
+                        <em style="box-sizing: border-box; margin: 0; padding: 0;">{{ zen_quote.quote }}</em>
+                        <cite style="box-sizing: border-box; display: block; text-align: right; font-size: 12px; font-style: normal; margin: 4px 0 0 0; padding: 0;">— {{ zen_quote.author }}</cite>
                     </p>
                 </div>
             </div>
-            
+
             <!-- Solar & Cat Column (40%) with proper stacking -->
-            <div class="bento-col bento-col-40">
+            <div class="bento-col bento-col-40" style="box-sizing: border-box; display: flex; flex-direction: column; gap: 8px; flex: 40; margin: 0; padding: 0;">
                 <!-- Solar Schedule - First item -->
-                <div class="bento-item cell-blue">
-                    <h2><span class="icon">☀️</span> Perfect Timing Guide</h2>
-                    <div class="solar-info">
-                        <strong><span class="emoji">🌅</span> Sunrise:</strong> 
-                        <span>{{ solar_schedule.sunrise }}</span>
+                <div class="bento-item cell-blue" style="box-sizing: border-box; background-color: #b3dee2; border-radius: 6px; overflow: hidden; height: 100%; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin: 0; padding: 15px; border: 1px solid #b3dee2;">
+                    <h2 style="box-sizing: border-box; font-family: 'Oswald', sans-serif; font-weight: 700; line-height: 1.2; color: #e27396; font-size: 16px; border-bottom-width: 1px; border-bottom-color: rgba(226, 115, 150, 0.3); border-bottom-style: solid; display: flex; align-items: center; justify-content: center; margin: 0 0 10px 0; padding: 0 0 4px 0; text-align: center;">
+<span class="icon" style="box-sizing: border-box; margin: 0 6px 0 0; padding: 0;">☀️</span> Perfect Timing Guide</h2>
+                    <div class="solar-info" style="box-sizing: border-box; font-size: 13px; display: flex; justify-content: space-between; align-items: center; margin: 0 0 8px 0; padding: 0;">
+                        <strong style="box-sizing: border-box; display: inline-flex; align-items: center; width: 140px; margin: 0; padding: 0;"><span class="emoji" style="box-sizing: border-box; margin: 0 5px 0 0; padding: 0;">🌅</span> Sunrise:</strong>
+                        <span style="box-sizing: border-box; text-align: right; flex-grow: 1; margin: 0; padding: 0;">{{ solar_schedule.sunrise }}</span>
                     </div>
-                    <div class="solar-info">
-                        <strong><span class="emoji">✨</span> Best Photo Light:</strong> 
-                        <span>{{ solar_schedule.golden_hour }}</span>
+                    <div class="solar-info" style="box-sizing: border-box; font-size: 13px; display: flex; justify-content: space-between; align-items: center; margin: 0 0 8px 0; padding: 0;">
+                        <strong style="box-sizing: border-box; display: inline-flex; align-items: center; width: 140px; margin: 0; padding: 0;"><span class="emoji" style="box-sizing: border-box; margin: 0 5px 0 0; padding: 0;">✨</span> Best Photo Light:</strong>
+                        <span style="box-sizing: border-box; text-align: right; flex-grow: 1; margin: 0; padding: 0;">{{ solar_schedule.golden_hour }}</span>
                     </div>
-                    <div class="solar-info">
-                        <strong><span class="emoji">🌇</span> Sunset:</strong> 
-                        <span>{{ solar_schedule.sunset }}</span>
+                    <div class="solar-info" style="box-sizing: border-box; font-size: 13px; display: flex; justify-content: space-between; align-items: center; margin: 0 0 8px 0; padding: 0;">
+                        <strong style="box-sizing: border-box; display: inline-flex; align-items: center; width: 140px; margin: 0; padding: 0;"><span class="emoji" style="box-sizing: border-box; margin: 0 5px 0 0; padding: 0;">🌇</span> Sunset:</strong>
+                        <span style="box-sizing: border-box; text-align: right; flex-grow: 1; margin: 0; padding: 0;">{{ solar_schedule.sunset }}</span>
                     </div>
                 </div>
-                
+
                 <!-- Daily Cat - Below Solar Schedule -->
-                <div class="bento-item cell-soft">
-                    <h2><span class="icon">🐾</span> Today's Cute Cat</h2>
-                    <div class="cat-image-container">
-                        <img src="{{ cat_gif }}" alt="Cat of the day" class="cat-image">
+                <div class="bento-item cell-soft" style="box-sizing: border-box; background-color: #efcfe3; border-radius: 6px; overflow: hidden; height: 100%; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin: 0; padding: 15px; border: 1px solid #ea9ab2;">
+                    <h2 style="box-sizing: border-box; font-family: 'Oswald', sans-serif; font-weight: 700; line-height: 1.2; color: #e27396; font-size: 16px; border-bottom-width: 1px; border-bottom-color: rgba(226, 115, 150, 0.3); border-bottom-style: solid; display: flex; align-items: center; justify-content: center; margin: 0 0 10px 0; padding: 0 0 4px 0; text-align: center;">
+<span class="icon" style="box-sizing: border-box; margin: 0 6px 0 0; padding: 0;">🐾</span> Today's Cute Cat</h2>
+                    <div class="cat-image-container" style="box-sizing: border-box; text-align: center; margin: 5px 0 0 0; padding: 0;">
+                        <img src="{{ cat_gif }}" alt="Cat of the day" class="cat-image" style="box-sizing: border-box; max-width: 100%; height: auto; display: block; width: 100%; border-radius: 5px; margin: 0; padding: 0; border: 1px solid #ea9ab2;">
                     </div>
                 </div>
             </div>
         </div>
-        
+
         <!-- Row 2: Research papers (60%) | Word of the Day, Fact, Horoscope stacked (40%) -->
-        <div class="bento-row">
+        <div class="bento-row" style="box-sizing: border-box; display: flex; gap: 8px; width: 100%; margin: 0 0 8px 0; padding: 0;">
             <!-- Research Papers Column (60%) -->
-            <div class="bento-col bento-col-60">
-                <div class="bento-item cell-green">
-                    <h2><span class="icon">🔭</span> Latest Research: {{ arxiv_query | capitalize }}</h2>
-                    
+            <div class="bento-col bento-col-60" style="box-sizing: border-box; display: flex; flex-direction: column; gap: 8px; flex: 60; margin: 0; padding: 0;">
+                <div class="bento-item cell-green" style="box-sizing: border-box; background-color: #eaf2d7; border-radius: 6px; overflow: hidden; height: 100%; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin: 0; padding: 15px; border: 1px solid #eaf2d7;">
+                    <h2 style="box-sizing: border-box; font-family: 'Oswald', sans-serif; font-weight: 700; line-height: 1.2; color: #e27396; font-size: 16px; border-bottom-width: 1px; border-bottom-color: rgba(226, 115, 150, 0.3); border-bottom-style: solid; display: flex; align-items: center; justify-content: center; margin: 0 0 10px 0; padding: 0 0 4px 0; text-align: center;">
+<span class="icon" style="box-sizing: border-box; margin: 0 6px 0 0; padding: 0;">🔭</span> Latest Research: {{ arxiv_query | capitalize }}</h2>
+
                     {% if arxiv_papers %}
-                    <ul class="paper-list">
+                    <ul class="paper-list" style="box-sizing: border-box; list-style: none; margin: 0; padding: 0;">
                         {% for paper in arxiv_papers[:3] %}
-                        <li class="paper-item">
-                            <span class="paper-title">{{ paper.title }}</span>
-                            <div class="scroll-container">
-                                <p class="paper-abstract">{{ paper.abstract }}</p>
+                        <li class="paper-item" style="box-sizing: border-box; border-bottom: 1px dashed rgba(226, 115, 150, 0.2); margin: 0 0 10px 0; padding: 0 0 10px 0;">
+                            <span class="paper-title" style="box-sizing: border-box; font-weight: bold; font-size: 13px; color: #e27396; display: block; margin: 0 0 3px 0; padding: 0;">{{ paper.title }}</span>
+                            <div class="scroll-container" style="box-sizing: border-box; overflow-y: auto; scrollbar-width: thin; scrollbar-color: #ea9ab2 #efcfe3; max-height: 150px; margin: 0 0 5px 0; padding: 0 5px 0 0;">
+                                <p class="paper-abstract" style="box-sizing: border-box; font-size: 12px; line-height: 1.4; margin: 0 0 8px 0; padding: 0;">{{ paper.abstract }}</p>
                             </div>
-                            <p class="paper-meta">
-                                <span class="light-text">{{ paper.published }}</span> | 
-                                <a href="{{ paper.pdf_link }}" target="_blank">PDF</a>
+                            <p class="paper-meta" style="box-sizing: border-box; font-size: 10px; margin: 0 0 8px 0; padding: 0;">
+                                <span class="light-text" style="box-sizing: border-box; color: rgba(226, 115, 150, 0.7); margin: 0; padding: 0;">{{ paper.published }}</span> |
+                                <a href="{{ paper.pdf_link }}" target="_blank" style="box-sizing: border-box; color: #e27396; text-decoration: none; margin: 0; padding: 0;">PDF</a>
                             </p>
                         </li>
                         {% endfor %}
                     </ul>
                     {% else %}
-                    <p class="light-text text-center">No new papers found for "{{ arxiv_query }}".</p>
+                    <p class="light-text text-center" style="box-sizing: border-box; color: rgba(226, 115, 150, 0.7); margin: 0 0 8px 0; padding: 0; text-align: center;">No new papers found for "{{ arxiv_query }}".</p>
                     {% endif %}
                 </div>
             </div>
-            
+
             <!-- Word, Fact, Horoscope Column (40%) - Properly stacked vertically -->
-            <div class="bento-col bento-col-40">
+            <div class="bento-col bento-col-40" style="box-sizing: border-box; display: flex; flex-direction: column; gap: 8px; flex: 40; margin: 0; padding: 0;">
                 <!-- Word of the Day -->
-                <div class="bento-item cell-pink">
-                    <h2><span class="icon">📖</span> Word of the Day</h2>
-                    <strong class="wod-word">{{ wod.word }}</strong>
-                    <span class="wod-pos light-text">({{ wod.part_of_speech }})</span>
-                    <p class="text-sm">{{ wod.definition }}</p>
+                <div class="bento-item cell-pink" style="box-sizing: border-box; background-color: #e27396; border-radius: 6px; overflow: hidden; height: 100%; box-shadow: 0 2px 4px rgba(0,0,0,0.05); color: #fff; margin: 0; padding: 15px; border: 1px solid #e27396;">
+                    <h2 style="box-sizing: border-box; font-family: 'Oswald', sans-serif; font-weight: 700; line-height: 1.2; color: #fff; font-size: 16px; border-bottom-width: 1px; border-bottom-color: rgba(255, 255, 255, 0.3); border-bottom-style: solid; display: flex; align-items: center; justify-content: center; margin: 0 0 10px 0; padding: 0 0 4px 0; text-align: center;">
+<span class="icon" style="box-sizing: border-box; margin: 0 6px 0 0; padding: 0;">📖</span> Word of the Day</h2>
+                    <strong class="wod-word" style="box-sizing: border-box; font-family: 'Oswald', sans-serif; font-size: 16px; color: #fff; text-transform: uppercase; display: block; text-align: center; margin: 0 0 2px 0; padding: 0;">{{ wod.word }}</strong>
+                    <span class="wod-pos light-text" style="box-sizing: border-box; color: rgba(255, 255, 255, 0.8); text-align: center; display: block; font-size: 11px; margin: 0 0 6px 0; padding: 0;">({{ wod.part_of_speech }})</span>
+                    <p class="text-sm" style="box-sizing: border-box; font-size: 13px; margin: 0 0 8px 0; padding: 0;">{{ wod.definition }}</p>
                 </div>
-                
+
                 <!-- Interesting Fact -->
-                <div class="bento-item cell-blue">
-                    <h2><span class="icon">💡</span> Today's Interesting Fact</h2>
-                    <p class="text-sm">{{ interesting_fact }}</p>
+                <div class="bento-item cell-blue" style="box-sizing: border-box; background-color: #b3dee2; border-radius: 6px; overflow: hidden; height: 100%; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin: 0; padding: 15px; border: 1px solid #b3dee2;">
+                    <h2 style="box-sizing: border-box; font-family: 'Oswald', sans-serif; font-weight: 700; line-height: 1.2; color: #e27396; font-size: 16px; border-bottom-width: 1px; border-bottom-color: rgba(226, 115, 150, 0.3); border-bottom-style: solid; display: flex; align-items: center; justify-content: center; margin: 0 0 10px 0; padding: 0 0 4px 0; text-align: center;">
+<span class="icon" style="box-sizing: border-box; margin: 0 6px 0 0; padding: 0;">💡</span> Today's Interesting Fact</h2>
+                    <p class="text-sm" style="box-sizing: border-box; font-size: 13px; margin: 0 0 8px 0; padding: 0;">{{ interesting_fact }}</p>
                 </div>
-                
+
                 <!-- Horoscope -->
-                <div class="bento-item cell-soft">
-                    <h2><span class="icon">✨</span> {{ horoscope.sign }} Horoscope</h2>
-                    <p class="text-xs">{{ horoscope.prediction }}</p>
-                    <p class="light-text text-xxs text-center">{{ horoscope.date }}</p>
+                <div class="bento-item cell-soft" style="box-sizing: border-box; background-color: #efcfe3; border-radius: 6px; overflow: hidden; height: 100%; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin: 0; padding: 15px; border: 1px solid #ea9ab2;">
+                    <h2 style="box-sizing: border-box; font-family: 'Oswald', sans-serif; font-weight: 700; line-height: 1.2; color: #e27396; font-size: 16px; border-bottom-width: 1px; border-bottom-color: rgba(226, 115, 150, 0.3); border-bottom-style: solid; display: flex; align-items: center; justify-content: center; margin: 0 0 10px 0; padding: 0 0 4px 0; text-align: center;">
+<span class="icon" style="box-sizing: border-box; margin: 0 6px 0 0; padding: 0;">✨</span> {{ horoscope.sign }} Horoscope</h2>
+                    <p class="text-xs" style="box-sizing: border-box; font-size: 12px; line-height: 1.4; margin: 0 0 8px 0; padding: 0;">{{ horoscope.prediction }}</p>
+                    <p class="light-text text-xxs text-center" style="box-sizing: border-box; font-size: 11px; line-height: 1.3; color: rgba(226, 115, 150, 0.7); margin: 0 0 8px 0; padding: 0; text-align: center;">{{ horoscope.date }}</p>
                 </div>
             </div>
         </div>
-        
+
         <!-- Row 3: Recipe (40%) | Nearby restaurants (60%) - Fixed height matching -->
-        <div class="bento-row">
+        <div class="bento-row" style="box-sizing: border-box; display: flex; gap: 8px; width: 100%; margin: 0 0 8px 0; padding: 0;">
             <!-- Recipe Column (40%) -->
-            <div class="bento-col bento-col-40">
-                <div class="bento-item cell-lightpink">
-                    <h2><span class="icon">🍳</span> Recipe of the Day</h2>
-                    <p class="text-center text-sm"><strong>{{ recipe.name }}</strong></p>
-                    
-                    <a href="{{ recipe.source_url or '#' }}" target="_blank" class="recipe-image-container">
+            <div class="bento-col bento-col-40" style="box-sizing: border-box; display: flex; flex-direction: column; gap: 8px; flex: 40; margin: 0; padding: 0;">
+                <div class="bento-item cell-lightpink" style="box-sizing: border-box; background-color: #ea9ab2; border-radius: 6px; overflow: hidden; height: 100%; box-shadow: 0 2px 4px rgba(0,0,0,0.05); color: #fff; margin: 0; padding: 15px; border: 1px solid #e27396;">
+                    <h2 style="box-sizing: border-box; font-family: 'Oswald', sans-serif; font-weight: 700; line-height: 1.2; color: #fff; font-size: 16px; border-bottom-width: 1px; border-bottom-color: rgba(255, 255, 255, 0.3); border-bottom-style: solid; display: flex; align-items: center; justify-content: center; margin: 0 0 10px 0; padding: 0 0 4px 0; text-align: center;">
+<span class="icon" style="box-sizing: border-box; margin: 0 6px 0 0; padding: 0;">🍳</span> Recipe of the Day</h2>
+                    <p class="text-center text-sm" style="box-sizing: border-box; font-size: 13px; text-align: center; margin: 0 0 8px 0; padding: 0;"><strong style="box-sizing: border-box; margin: 0; padding: 0;">{{ recipe.name }}</strong></p>
+
+                    <a href="{{ recipe.source_url or '#' }}" target="_blank" class="recipe-image-container" style="box-sizing: border-box; text-align: center; color: #fff; text-decoration: underline; margin: 0 0 10px 0; padding: 0;">
                         {% if recipe.image_url %}
-                        <img src="{{ recipe.image_url }}" alt="Image of {{ recipe.name }}" class="recipe-image">
+                        <img src="{{ recipe.image_url }}" alt="Image of {{ recipe.name }}" class="recipe-image" style="box-sizing: border-box; max-width: 90%; height: auto; display: block; border-radius: 4px; margin: 0 auto; padding: 0; border: 1px solid #ea9ab2;">
                         {% endif %}
                     </a>
-                    
-                    <div class="scroll-container">
-                        <ol class="recipe-list">
+
+                    <div class="scroll-container" style="box-sizing: border-box; overflow-y: auto; scrollbar-width: thin; scrollbar-color: #ea9ab2 #efcfe3; max-height: 150px; margin: 0 0 5px 0; padding: 0 5px 0 0;">
+                        <ol class="recipe-list" style="box-sizing: border-box; font-size: 11px; line-height: 1.3; margin: 8px 0; padding: 0 0 0 18px;">
                             {% set instructions_list = recipe.instructions.splitlines() %}
                             {% for instruction in instructions_list %}
-                                {% if instruction.strip() %}<li>{{ instruction.strip() }}</li>{% endif %}
+                                {% if instruction.strip() %}<li style="box-sizing: border-box; margin: 0 0 5px 0; padding: 0;">{{ instruction.strip() }}</li>{% endif %}
                             {% endfor %}
                         </ol>
                     </div>
-                    
+
                     {% if recipe.source_url %}
-                    <a href="{{ recipe.source_url }}" target="_blank" class="recipe-source-link">View Full Recipe</a>
+                    <a href="{{ recipe.source_url }}" target="_blank" class="recipe-source-link" style="box-sizing: border-box; display: block; text-align: center; font-size: 11px; color: #fff; text-decoration: underline; margin: 8px 0 0 0; padding: 0;">View Full Recipe</a>
                     {% endif %}
                 </div>
             </div>
-            
+
             <!-- Restaurants Column (60%) - Each restaurant with its own scrollable review area -->
-            <div class="bento-col bento-col-60">
-                <div class="bento-item cell-green">
-                    <h2><span class="icon">🗺️</span> Nearby Places to Explore</h2>
-                    
+            <div class="bento-col bento-col-60" style="box-sizing: border-box; display: flex; flex-direction: column; gap: 8px; flex: 60; margin: 0; padding: 0;">
+                <div class="bento-item cell-green" style="box-sizing: border-box; background-color: #eaf2d7; border-radius: 6px; overflow: hidden; height: 100%; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin: 0; padding: 15px; border: 1px solid #eaf2d7;">
+                    <h2 style="box-sizing: border-box; font-family: 'Oswald', sans-serif; font-weight: 700; line-height: 1.2; color: #e27396; font-size: 16px; border-bottom-width: 1px; border-bottom-color: rgba(226, 115, 150, 0.3); border-bottom-style: solid; display: flex; align-items: center; justify-content: center; margin: 0 0 10px 0; padding: 0 0 4px 0; text-align: center;">
+<span class="icon" style="box-sizing: border-box; margin: 0 6px 0 0; padding: 0;">🗺️</span> Nearby Places to Explore</h2>
+
                     {% if restaurants %}
-                    <ul class="resto-list">
+                    <ul class="resto-list" style="box-sizing: border-box; list-style: none; margin: 0; padding: 0;">
                         {% for restaurant in restaurants[:3] %}
-                        <li class="resto-item">
-                            <img src="{% if restaurant.photo_base64 %}data:image/jpeg;base64,{{ restaurant.photo_base64 }}{% else %}https://via.placeholder.com/60x60.png?text=IMG{% endif %}" alt="" class="resto-photo">
-                            <div class="resto-details">
-                                <span class="resto-name">{{ restaurant.name }}</span>
-                                <div class="resto-rating-line">
-                                    <div class="stars-container">
+                        <li class="resto-item" style="box-sizing: border-box; border-bottom: 1px dashed rgba(226, 115, 150, 0.2); display: flex; margin: 0 0 10px 0; padding: 0 0 10px 0;">
+                            <img src="{% if restaurant.photo_base64 %}data:image/jpeg;base64,{{ restaurant.photo_base64 }}{% else %}https://via.placeholder.com/60x60.png?text=IMG{% endif %}" alt="" class="resto-photo" style="box-sizing: border-box; max-width: 100%; height: 60px; display: block; width: 60px; border-radius: 4px; object-fit: cover; flex-shrink: 0; margin: 0 8px 0 0; padding: 0; border: 1px solid #ea9ab2;">
+                            <div class="resto-details" style="box-sizing: border-box; flex-grow: 1; margin: 0; padding: 0;">
+                                <span class="resto-name" style="box-sizing: border-box; font-weight: bold; font-size: 14px; display: block; color: #e27396; margin: 0 0 2px 0; padding: 0;">{{ restaurant.name }}</span>
+                                <div class="resto-rating-line" style="box-sizing: border-box; font-size: 11px; line-height: 1.2; display: flex; align-items: center; margin: 0 0 3px 0; padding: 0;">
+                                    <div class="stars-container" style="box-sizing: border-box; display: inline-flex; white-space: nowrap; align-items: center; margin: 0; padding: 0;">
                                         {% set r = restaurant.rating|default(0)|round|int %}
                                         {% for i in range(r) %}⭐{% endfor %}
-                                        {% if r < 5 %}
-                                            {% for i in range(5-r) %}<span style="opacity: 0.3;">⭐</span>{% endfor %}
+                                        {% if r < 5 %} {# Corrected: < replaced with < #}
+                                            {% for i in range(5-r) %}<span style="opacity: 0.3; box-sizing: border-box; margin: 0; padding: 0;">⭐</span>{% endfor %}
                                         {% endif %}
                                     </div>
-                                    <span class="light-text">&nbsp;({{ restaurant.rating|round(1) if restaurant.rating else 'N/A' }}) {{ restaurant.user_ratings_total or '?' }} ratings</span>
+                                    <span class="light-text" style="box-sizing: border-box; color: rgba(226, 115, 150, 0.7); margin: 0; padding: 0;"> ({{ restaurant.rating|round(1) if restaurant.rating else 'N/A' }}) {{ restaurant.user_ratings_total or '?' }} ratings</span>
                                 </div>
-                                <p class="resto-address">{{ restaurant.address }}</p>
-                                
+                                <p class="resto-address" style="box-sizing: border-box; font-size: 11px; line-height: 1.3; color: rgba(226, 115, 150, 0.7); margin: 0 0 2px 0; padding: 0;">{{ restaurant.address }}</p>
+
                                 {% if restaurant.reviews %}
-                                <div class="resto-reviews">
-                                    <h4>Reviews:</h4>
-                                    <div class="scroll-container">
-                                        <ul>
+                                <div class="resto-reviews" style="box-sizing: border-box; margin: 0; padding: 0;">
+                                    <h4 style="box-sizing: border-box; font-family: 'Oswald', sans-serif; font-weight: 400; font-size: 12px; color: #e27396; border-top-width: 1px; border-top-color: rgba(226, 115, 150, 0.2); border-top-style: dotted; text-transform: uppercase; margin: 6px 0 4px 0; padding: 4px 0 0 0;">Reviews:</h4>
+                                    <div class="scroll-container" style="box-sizing: border-box; overflow-y: auto; scrollbar-width: thin; scrollbar-color: #ea9ab2 #efcfe3; max-height: 150px; margin: 0 0 5px 0; padding: 0 5px 0 0;">
+                                        <ul style="box-sizing: border-box; list-style: none; font-size: 11px; margin: 0; padding: 0;">
                                             {% for review in restaurant.reviews %}
-                                            <li>
-                                                <div class="reviewer-line">
-                                                    <span class="reviewer">{{ review.reviewer_name or 'Anon' }}:</span>
-                                                    <div class="review-stars">
+                                            <li style="box-sizing: border-box; margin: 0 0 4px 0; padding: 0;">
+                                                <div class="reviewer-line" style="box-sizing: border-box; display: flex; align-items: center; margin: 0 0 2px 0; padding: 0;">
+                                                    <span class="reviewer" style="box-sizing: border-box; font-weight: bold; margin: 0; padding: 0;">{{ review.reviewer_name or 'Anon' }}:</span>
+                                                    <div class="review-stars" style="box-sizing: border-box; color: #e27396; display: inline-flex; margin: 0 0 0 4px; padding: 0;">
                                                         {% set rr = review.rating|default(0)|round|int %}
                                                         {% for i in range(rr) %}⭐{% endfor %}
-                                                        {% if rr < 5 %}
-                                                            {% for i in range(5-rr) %}<span style="opacity: 0.3;">⭐</span>{% endfor %}
+                                                        {% if rr < 5 %} {# Corrected: < replaced with < #}
+                                                            {% for i in range(5-rr) %}<span style="opacity: 0.3; box-sizing: border-box; margin: 0; padding: 0;">⭐</span>{% endfor %}
                                                         {% endif %}
                                                     </div>
                                                 </div>
-                                                <span class="review-text">"{{ review.text }}"</span>
+                                                <span class="review-text" style="box-sizing: border-box; font-style: italic; color: #555; display: block; margin: 0 0 8px 0; padding: 0;">"{{ review.text }}"</span>
                                             </li>
                                             {% endfor %}
                                         </ul>
@@ -702,17 +748,19 @@
                         {% endfor %}
                     </ul>
                     {% else %}
-                    <p class="light-text text-center">No matching places found nearby.</p>
+                    <p class="light-text text-center" style="box-sizing: border-box; color: rgba(226, 115, 150, 0.7); margin: 0 0 8px 0; padding: 0; text-align: center;">No matching places found nearby.</p>
                     {% endif %}
                 </div>
             </div>
         </div>
-        
+
         <!-- Footer -->
-        <div class="bento-row">
-            <div class="footer">
-                <p>Have a wonderful day!</p>
-            </div>
+        <div class="bento-row" style="box-sizing: border-box; display: flex; gap: 8px; width: 100%; margin: 0 0 8px 0; padding: 0;"> <!-- Note: Last row still has margin-bottom: 8px from rule, maybe should remove -->
+             <div class="bento-col" style="width: 100%; flex: 1;"> <!-- Make footer column span full width -->
+                 <div class="footer" style="box-sizing: border-box; text-align: center; padding: 15px 10px 10px; border-top: 2px solid #ea9ab2; color: #e27396; font-size: 12px; width: 100%; margin: 0; ">
+                    <p style="box-sizing: border-box; margin: 0 0 8px 0; padding: 0;">Have a wonderful day!</p>
+                 </div>
+             </div>
         </div>
     </div>
 </body>

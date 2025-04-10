@@ -1,16 +1,27 @@
+"""
+This module provides functions to retrieve various pieces of content from
+online APIs and web pages, such as the solar schedule, quotes, Bible verses,
+useless facts, recipes, arXiv papers, Word of the Day, Poem of the Day, horoscopes,
+and places data via Google Places APIs. It also contains a main() function to
+demonstrate and print the outputs from these functions.
+"""
+
+import base64
 import logging
 import os
 import random
 from typing import Any, Dict, List, Optional
-import base64
+import warnings
 
 import requests
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, XMLParsedAsHTMLWarning
 from dotenv import load_dotenv
 
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
-)
+# Configure logging
+logger = logging.getLogger(__name__)
+
+# Suppress warnings related to BeautifulSoup parsing
+warnings.filterwarnings("ignore", category=XMLParsedAsHTMLWarning)
 
 
 def get_solar_schedule(lat: float, long: float) -> Dict[str, Any]:
@@ -23,13 +34,13 @@ def get_solar_schedule(lat: float, long: float) -> Dict[str, Any]:
 
     Returns:
         Dict[str, Any]: A dictionary containing solar schedule data such as sunrise and sunset times.
-                        Returns an empty dictionary if an error occurs or if the API response is invalid.
+                        Returns an empty dictionary if an error occurs.
     """
     SOLAR_SCHEDULE_URL = "https://api.sunrisesunset.io/json"
     params = {"lat": lat, "lng": long}
     try:
         response = requests.get(url=SOLAR_SCHEDULE_URL, params=params, timeout=10)
-        response.raise_for_status()  # Ensure the response status is 2xx.
+        response.raise_for_status()  # Ensure response status is 2xx.
         data = response.json()
         if "results" in data:
             return data["results"]
@@ -41,7 +52,8 @@ def get_solar_schedule(lat: float, long: float) -> Dict[str, Any]:
 
 
 def get_zen_quote() -> Dict[str, str]:
-    """Fetch a random Zen quote.
+    """
+    Fetch a random Zen quote.
 
     Returns:
         Dict[str, str]: Dictionary with keys 'quote' and 'author'.
@@ -54,9 +66,7 @@ def get_zen_quote() -> Dict[str, str]:
         data = response.json()[0]
         return {
             "quote": data["q"],
-            "author": data.get(
-                "a", "Unknown"
-            ),  # Default to "Unknown" if author key is not found
+            "author": data.get("a", "Unknown"),
         }
     except Exception as e:
         logging.error(f"Error fetching Zen quote: {e}")
@@ -64,7 +74,8 @@ def get_zen_quote() -> Dict[str, str]:
 
 
 def get_stoic_quote() -> Dict[str, str]:
-    """Fetch a random Stoic quote.
+    """
+    Fetch a random Stoic quote.
 
     Returns:
         Dict[str, str]: Dictionary with keys 'quote' and 'author'.
@@ -77,17 +88,16 @@ def get_stoic_quote() -> Dict[str, str]:
         data = response.json()["data"]
         return {
             "quote": data["quote"],
-            "author": data.get(
-                "author", "Unknown"
-            ),  # Default to "Unknown" if author key is not found
+            "author": data.get("author", "Unknown"),
         }
     except Exception as e:
-        logging.error(f"Error fetching Zen quote: {e}")
+        logging.error(f"Error fetching Stoic quote: {e}")
     return {}
 
 
 def get_bible_verse() -> Dict[str, str]:
-    """Fetch a random Bible verse from the Gospels.
+    """
+    Fetch a random Bible verse from the Gospels.
 
     Returns:
         Dict[str, str]: Dictionary with keys 'reference' and 'verse'.
@@ -97,27 +107,24 @@ def get_bible_verse() -> Dict[str, str]:
     try:
         response = requests.get(url=BIBLE_URL, timeout=10)
         response.raise_for_status()
-        data = response.json().get("random_verse", {})  # Use .get() to avoid KeyError
-
+        data = response.json().get("random_verse", {})
         text = data["text"]
-        # Use .get() with default values for missing keys
         book = data.get("book", "Unknown Book")
         chapter = data.get("chapter", "0")
         verse_number = data.get("verse", "0")
-
         reference = f"{book} {chapter}:{verse_number}"
         return {"reference": reference, "verse": text}
-
     except Exception as e:
         logging.error(f"Error fetching Bible verse: {e}")
     return {}
 
 
 def get_useless_fact() -> str:
-    """Fetch a random interesting fact.
+    """
+    Fetch a random interesting fact.
 
     Returns:
-        Optional[Dict[str, str]]: Dictionary with key 'fact', or None if error.
+        str: A fact as a string. Returns an empty string if an error occurs.
     """
     USELESS_FACT_URL = "https://uselessfacts.jsph.pl/api/v2/facts/random"
     try:
@@ -126,15 +133,17 @@ def get_useless_fact() -> str:
         data = response.json()
         return data["text"]
     except Exception as e:
-        logging.error(f"Error: {e}")
+        logging.error(f"Error fetching useless fact: {e}")
     return ""
 
 
 def get_recipe_of_the_day() -> Dict[str, str]:
-    """Fetch a random recipe.
+    """
+    Fetch a random recipe.
 
     Returns:
-        Optional[Dict[str, str]]: Dictionary with keys 'name', 'instructions', 'image_url', and 'youtube_url', or None if error.
+        Dict[str, str]: Dictionary with keys 'name', 'instructions', 'image_url', and 'youtube_url'.
+                        Returns an empty dictionary if an error occurs.
     """
     RECIPE_URL = "https://www.themealdb.com/api/json/v1/1/random.php"
     try:
@@ -148,14 +157,12 @@ def get_recipe_of_the_day() -> Dict[str, str]:
             "youtube_url": meal.get("strYoutube", ""),
         }
     except Exception as e:
-        logging.error(f"Error: {e}")
+        logging.error(f"Error fetching recipe: {e}")
     return {}
 
 
 def get_arxiv_papers(
-    query: str,
-    max_results: int = 100,
-    random_k: int = 3,
+    query: str, max_results: int = 100, random_k: int = 3
 ) -> List[Dict[str, str]]:
     """
     Fetch a list of papers from arXiv using BeautifulSoup.
@@ -166,8 +173,8 @@ def get_arxiv_papers(
         random_k (int): Number of random papers to select from the retrieved list.
 
     Returns:
-        List[Dict[str, str]]: List of dictionaries with keys 'title', 'abstract', 'published', 'pdf_link',
-                              'local_path', and 's3_path'. Returns an empty list if an error occurred.
+        List[Dict[str, str]]: List of dictionaries with keys 'title', 'abstract', 'published',
+                              and 'pdf_link'. Returns an empty list if an error occurred.
     """
     try:
         base_url = "http://export.arxiv.org/api/query"
@@ -180,17 +187,16 @@ def get_arxiv_papers(
         response = requests.get(base_url, params=params, timeout=30)
         response.raise_for_status()
 
-        # Parse the XML response with BeautifulSoup.
         soup = BeautifulSoup(response.text, features="lxml")
         entries = soup.find_all("entry")
         if not entries:
             logging.warning("No entries found in arXiv feed.")
             return []
 
-        # Adjust random_k if necessary.
+        # Adjust random_k if more than available entries
         if random_k > len(entries):
             logging.warning(
-                "random_k (%d) is greater than the number of retrieved papers (%d). Returning all papers.",
+                "random_k (%d) is greater than retrieved papers (%d). Returning all papers.",
                 random_k,
                 len(entries),
             )
@@ -198,7 +204,6 @@ def get_arxiv_papers(
 
         selected_entries = random.sample(entries, random_k)
         papers = []
-
         for entry in selected_entries:
             title = entry.title.text.strip()
             abstract = entry.summary.text.strip()
@@ -227,21 +232,25 @@ def get_arxiv_papers(
     return []
 
 
-def get_word_of_the_day() -> list[dict]:
-    """Fetch the Word of the Day from Dictionary.com.
+def get_word_of_the_day() -> Dict[str, str]:
+    """
+    Fetch the Word of the Day from Dictionary.com.
 
     Returns:
-        dict: A dictionary with keys 'word', 'part_of_speech', and 'definition', or None if an error occurred.
+        Dict[str, str]: A dictionary with keys 'word', 'part_of_speech', and 'definition'.
+                        Returns an empty dictionary if an error occurs.
     """
     DICTIONARY_URL = "https://www.dictionary.com/e/word-of-the-day/"
     headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+        "User-Agent": (
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+            "(KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+        )
     }
     try:
         response = requests.get(url=DICTIONARY_URL, headers=headers, timeout=10)
         response.raise_for_status()
 
-        # Parse the HTML content using BeautifulSoup
         soup = BeautifulSoup(response.content, "html.parser")
         word = soup.select_one(
             ".otd-item-headword .otd-item-headword__word h1"
@@ -261,52 +270,49 @@ def get_word_of_the_day() -> list[dict]:
 
 
 def get_poem_of_the_day() -> Dict[str, str]:
-    """Fetch the Poem of the Day from Poetry Foundation.
+    """
+    Fetch the Poem of the Day from Poetry Foundation.
 
     Returns:
-        Dict[str, str]: Dictionary with keys 'title', 'author', and 'poem'.
-                        Returns an empty dictionary if an error occurs or if the title is missing.
+        Dict[str, str]: A dictionary with keys 'title', 'author', and 'poem'.
+                        Returns an empty dictionary if an error occurs.
     """
     POEM_URL = "https://www.poetryfoundation.org/poems/poem-of-the-day"
     headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+        "User-Agent": (
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+            "(KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+        )
     }
     try:
         response = requests.get(url=POEM_URL, headers=headers, timeout=15)
         response.raise_for_status()
 
-        # Parse the HTML content using BeautifulSoup
         soup = BeautifulSoup(response.content, "html.parser")
 
-        # Extract the title (mandatory)
-        # 1. Title Selector: Selects the <h4> element with class 'type-gamma'.
+        # Extract title from the designated header element.
         title = soup.select_one("h4.type-gamma").get_text(strip=True)
 
-        # Extract the author (optional, defaults to "Unknown")
-        # 2. Author Selector: Selects the innermost <span> inside a <span> inside a <div> with class 'type-kappa'.
+        # Extract author if present; default to "Unknown"
         author_tag = soup.select_one("div.type-kappa span span")
         author = author_tag.get_text(strip=True) if author_tag else "Unknown"
 
-        # Extract the poem text and preserve line breaks
-        # 3. Poem Text Selector: Selects the <div> containing the poem, identifiable by classes like 'rich-text' and 'md:text-xl'.
-        # We use a partial class match '[class*="md:text-xl"]' for robustness, assuming this class is unique to the poem div.
+        # Extract poem text, preserving line breaks by replacing <br> tags with newline characters.
         poem_div = soup.select_one('div.rich-text[class*="md:text-xl"]')
         for br in poem_div.find_all("br"):
-            br.replace_with("\n")  # Replace <br> tags with newline characters
-        poem = poem_div.get_text()  # Do not use strip=True to preserve newlines
+            br.replace_with("\n")
+        poem = poem_div.get_text()
 
-        # Return the poem details
         return {"title": title, "author": author, "poem": poem}
 
     except Exception as e:
         logging.error(f"Error fetching Poem of the Day: {e}", exc_info=True)
-        # Optional: Log a snippet of the HTML for debugging if things fail
-        # logging.debug(f"HTML Snippet: {soup.prettify()[:2000]}")
         return {}
 
 
 def get_horoscope(sign: str) -> Dict[str, str]:
-    """Fetches the daily horoscope for a given zodiac sign.
+    """
+    Fetch the daily horoscope for a given zodiac sign.
 
     Args:
         sign (str): The zodiac sign (e.g., 'aries', 'leo').
@@ -316,14 +322,13 @@ def get_horoscope(sign: str) -> Dict[str, str]:
                         Returns an empty dictionary if an error occurs.
     """
     HOROSCOPE_URL = "https://horoscope-app-api.vercel.app/api/v1/get-horoscope/daily"
-    params = {"sign": sign}  # Ensure sign is lowercase
-
+    params = {"sign": sign}
     try:
         response = requests.get(url=HOROSCOPE_URL, params=params, timeout=10)
-        response.raise_for_status()  # Raise HTTPError for bad responses
+        response.raise_for_status()
         data = response.json()["data"]
         return {
-            "sign": sign,  # Use original sign case for return
+            "sign": sign,
             "prediction": data["horoscope_data"],
             "date": data["date"],
         }
@@ -342,30 +347,24 @@ def get_places(
     price_levels: Optional[List[str]] = None,
 ) -> List[Dict[str, Any]]:
     """
-    Searches for places (e.g., restaurants, cafes, bars) in a specified location using the Google Places API.
+    Searches for places (e.g., restaurants, cafes) in a specified location using the Google Places API.
 
     Args:
-        api_key (str): Your Google Cloud API Key with Places API enabled.
+        api_key (str): Google Cloud API key with Places API enabled.
         text_query (str): The search term (e.g., "vegetarian ramen").
-        bounding_coordinates (Dict[str, Dict[str, float]]): Coordinates for the search area. It should include
-            "low" and "high" for latitude and longitude.
-        place_type (Optional[str]): The type of place to search for (e.g., "restaurant", "cafe").
-            Defaults to None (no filtering).
-        page_size (int): The maximum number of results to return. Defaults to 10.
-            The API caps this at 20, so this will be used as the page size.
-        min_rating (Optional[float]): Minimum rating to filter results. Defaults to None (no filtering).
-        price_levels (Optional[List[str]]): List of price levels to filter results (e.g.,
-            ["PRICE_LEVEL_INEXPENSIVE", "PRICE_LEVEL_MODERATE"]). Defaults to None (no filtering).
+        bounding_coordinates (Dict[str, Dict[str, float]]): Coordinates for the search area with "low" and "high" keys.
+        place_type (Optional[str]): Type of place to search (e.g., "restaurant", "cafe").
+        page_size (int): Maximum number of results.
+        min_rating (Optional[float]): Minimum rating for filtering results.
+        price_levels (Optional[List[str]]): List of price level filters.
 
     Returns:
-        List[Dict[str, Any]]: A list of places matching the query, with fields such as name, address, rating,
-            user ratings, photo URL, and reviews. Returns an empty list if an error occurs.
+        List[Dict[str, Any]]: A list of processed places including details like name, address, rating, and photo (Base64 encoded).
+                              Returns an empty list if an error occurs.
     """
-
-    # --- Constants ---
     PLACES_API_URL = "https://places.googleapis.com/v1/places:searchText"
 
-    # --- Define Headers and Fields ---
+    # Fields to request
     fields = [
         "places.displayName",
         "places.formattedAddress",
@@ -374,14 +373,12 @@ def get_places(
         "places.reviews",
         "places.photos",
     ]
-
     headers = {
         "Content-Type": "application/json",
         "X-Goog-Api-Key": api_key,
         "X-Goog-FieldMask": ",".join(fields),
     }
 
-    # --- Build JSON Payload ---
     payload = {
         "textQuery": text_query,
         "pageSize": page_size,
@@ -402,7 +399,6 @@ def get_places(
         **({"minRating": min_rating} if min_rating else {}),
     }
 
-    # --- Make API Request & Process ---
     processed_places = []
     try:
         response = requests.post(
@@ -410,7 +406,6 @@ def get_places(
         )
         response.raise_for_status()
         results = response.json()
-
         places = results["places"]
 
         for place in places:
@@ -420,15 +415,13 @@ def get_places(
                 "rating": place.get("rating"),
                 "user_ratings_total": place.get("userRatingCount"),
                 "price_level": place.get("priceLevel"),
-                "photo_base64": None,  # Initialize photo data key
+                "photo_base64": None,  # Initialize photo key
             }
 
-            # --- Fetch and Encode Photo ---
+            # Fetch and encode photo if available.
             photos = place.get("photos", [])
             if photos:
-                photo_name = photos[0].get(
-                    "name"
-                )  # Get resource name of the first photo
+                photo_name = photos[0].get("name")
                 if photo_name:
                     photo_media_url = f"https://places.googleapis.com/v1/{photo_name}/media?maxWidthPx=400&key={api_key}"
                     try:
@@ -437,15 +430,13 @@ def get_places(
                         )
                         photo_response = requests.get(photo_media_url, timeout=10)
                         photo_response.raise_for_status()
-
-                        # Get image bytes and encode to Base64 string
                         image_bytes = photo_response.content
-                        base64_image = base64.b64encode(image_bytes).decode("utf-8")
-                        processed_place["photo_base64"] = base64_image
+                        processed_place["photo_base64"] = base64.b64encode(
+                            image_bytes
+                        ).decode("utf-8")
                         logging.debug(
                             f"Successfully encoded photo for {processed_place['name']}"
                         )
-
                     except requests.exceptions.RequestException as photo_err:
                         logging.warning(
                             f"Failed to download photo for {processed_place['name']} from {photo_name}: {photo_err}"
@@ -455,11 +446,11 @@ def get_places(
                             f"Failed to encode photo for {processed_place['name']}: {enc_err}"
                         )
 
-            # --- Process Reviews ---
+            # Process reviews and include up to three.
             reviews = []
             for review in place.get("reviews", [])[:3]:
                 review_text = review.get("text", {}).get("text")
-                if review_text:  # Only add if text exists
+                if review_text:
                     reviews.append(
                         {
                             "reviewer_name": review.get("authorAttribution", {}).get(
@@ -473,7 +464,6 @@ def get_places(
 
             processed_places.append(processed_place)
 
-        # Return results up to the originally requested page_size (or less if API returned fewer)
         return processed_places[:page_size]
 
     except Exception as e:
@@ -494,28 +484,21 @@ def get_nearby_places(
     Searches for nearby places using the Google Places v1 Nearby Search API.
 
     Args:
-        api_key (str): Your Google Cloud API Key with Places API enabled.
-        coordinates (tuple[float, float]): A tuple containing the latitude and longitude of the search center.
-        place_types (List[str]): A list of place types to filter the search (e.g., ["restaurant", "cafe"]).
-        search_radius (float, optional): The radius (in meters) around the coordinates to search. Defaults to 1000.
-        page_size (int, optional): The maximum number of results to return. Defaults to 10.
+        api_key (str): Google Cloud API key with Places API enabled.
+        coordinates (tuple[float, float]): Latitude and longitude as a tuple.
+        place_types (List[str]): List of place types (e.g., ["restaurant", "cafe"]).
+        search_radius (float, optional): Radius in meters around the coordinates. Defaults to 1000.
+        page_size (int, optional): Maximum number of results. Defaults to 10.
 
     Returns:
-        List[Dict[str, Any]]: A list of dictionaries, each representing a place. Each dictionary contains:
-            - "name" (str): The name of the place.
-            - "address" (str): The formatted address of the place.
-            - "rating" (float): The average rating of the place.
-            - "user_ratings_total" (int): The total number of user ratings for the place.
-            - "photo_url" (str): A URL to a photo of the place (if available).
+        List[Dict[str, Any]]: A list of processed places with details like name, address, rating, user ratings, and photo URL.
     """
     NEARBY_PLACES_API_URL = "https://places.googleapis.com/v1/places:searchNearby"
-
     headers = {
         "Content-Type": "application/json",
         "X-Goog-Api-Key": api_key,
-        "X-Goog-FieldMask": "places.displayName,places.formattedAddress,places.rating,places.userRatingCount,places.photos",  # Add more fields if needed
+        "X-Goog-FieldMask": "places.displayName,places.formattedAddress,places.rating,places.userRatingCount,places.photos",
     }
-
     body = {
         "includedTypes": place_types,
         "maxResultCount": page_size,
@@ -533,13 +516,12 @@ def get_nearby_places(
         )
         response.raise_for_status()
         results = response.json()
-
         places = results.get("places", [])
         logging.info(
             f"Found {len(places)} places near ({coordinates[0]}, {coordinates[1]})."
         )
 
-        processed_places: List[Dict[str, Any]] = []
+        processed_places = []
         for place in places:
             processed_place = {
                 "name": place.get("displayName", {}).get("text"),
@@ -549,18 +531,14 @@ def get_nearby_places(
                 "photo_url": None,
             }
 
-            # Process photo (optional: only if photos field is requested and present)
             if "photos" in place and place["photos"]:
                 photo_name = place["photos"][0].get("name")
                 if photo_name:
                     processed_place["photo_url"] = (
                         f"https://places.googleapis.com/v1/{photo_name}/media?maxWidthPx=400&key={api_key}"
                     )
-
             processed_places.append(processed_place)
-
         return processed_places
-
     except Exception as e:
         logging.exception(f"Unexpected error during Nearby Search v1: {e}")
         return []
@@ -574,53 +552,55 @@ def get_nearby_places_legacy(
     search_radius: float = 1000,
 ) -> List[Dict[str, Any]]:
     """
-    Searches for nearby places based on a coordinate using
-    the Google Places API Nearby Search endpoint. It applies filters such as place types
-    and returns up to `num_results` places with processed review and photo URL fields.
-    """
-    # --- Constants ---
-    NEARBY_SEARCH_URL = "https://maps.googleapis.com/maps/api/place/nearbysearch/json"
+    Searches for nearby places using the legacy Google Places API Nearby Search endpoint.
 
-    # --- Build URL Parameters ---
+    Args:
+        api_key (str): Google Cloud API key.
+        coordinates (tuple[float, float]): Latitude and longitude.
+        keyword (Optional[str]): Keyword to filter search results.
+        type (Optional[str]): Specific type of place.
+        search_radius (float, optional): Radius in meters for the search. Defaults to 1000.
+
+    Returns:
+        List[Dict[str, Any]]: A list of processed places with details like name, address, rating, and photo URL.
+                              Returns an empty list if an error occurs.
+    """
+    NEARBY_SEARCH_URL = "https://maps.googleapis.com/maps/api/place/nearbysearch/json"
     params = {
-        "location": f"{coordinates[0]},{coordinates[1]}",  # latitude, longitude
+        "location": f"{coordinates[0]},{coordinates[1]}",
         "radius": search_radius,
         "keyword": keyword,
         "type": type,
         "key": api_key,
     }
-
-    # --- Make API Request & Process the Response ---
     try:
         response = requests.get(NEARBY_SEARCH_URL, params=params, timeout=15)
         response.raise_for_status()
         results = response.json()
-
         places = results.get("results", [])
         logging.info(
             f"Found {len(places)} places near ({coordinates[0]}, {coordinates[1]})."
         )
 
-        processed_places: List[Dict[str, Any]] = []
+        processed_places = []
         for place in places:
-            # Process basic information
             processed_place = {
                 "name": place.get("name"),
                 "address": place.get("vicinity"),
                 "rating": place.get("rating"),
                 "user_ratings_total": place.get("user_ratings_total"),
             }
-
-            # Process photo (if available)
             photo_url = None
             photos = place.get("photos", [])
             if photos:
                 photo_reference = photos[0].get("photo_reference")
                 if photo_reference:
-                    photo_url = f"https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference={photo_reference}&key={api_key}"
+                    photo_url = (
+                        f"https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference="
+                        f"{photo_reference}&key={api_key}"
+                    )
             processed_place["photo_url"] = photo_url
 
-            # Process up to 3 reviews (if available)
             processed_reviews = []
             for review in place.get("reviews", [])[:3]:
                 processed_reviews.append(
@@ -633,7 +613,6 @@ def get_nearby_places_legacy(
             processed_place["reviews"] = processed_reviews
 
             processed_places.append(processed_place)
-
         return processed_places
 
     except requests.RequestException as e:
@@ -645,59 +624,61 @@ def get_nearby_places_legacy(
 
 
 def main() -> None:
-    """Main function to call all API functions and print the results."""
-    # Call the API functions
-    sun = get_solar_schedule(1.3521, 103.8198)  # Singapore coordinates
-    zen = get_zen_quote()
-    stoic = get_stoic_quote()
-    verse = get_bible_verse()
-    word = get_word_of_the_day()
-    fact = get_useless_fact()
+    """
+    Main function to call all API functions and print the results.
+    Demonstrates the retrieval of various data items.
+    """
+    # Retrieve different pieces of content
+    solar_schedule = get_solar_schedule(1.3521, 103.8198)  # Singapore coordinates
+    zen_quote = get_zen_quote()
+    stoic_quote = get_stoic_quote()
+    bible_verse = get_bible_verse()
+    word_of_the_day = get_word_of_the_day()
+    useless_fact = get_useless_fact()
     recipe = get_recipe_of_the_day()
-    papers = get_arxiv_papers(
-        query="object detection",
-        random_k=3,
-    )
+    arxiv_papers = get_arxiv_papers(query="object detection", random_k=3)
     poem = get_poem_of_the_day()
     horoscope = get_horoscope("Scorpio")  # Example zodiac sign
 
-    # Print the results
-    print(sun)
-    print(zen)
-    print(stoic)
-    print(verse)
-    print(word)
-    print(fact)
+    # Print the results of each API call
+    print(solar_schedule)
+    print(zen_quote)
+    print(stoic_quote)
+    print(bible_verse)
+    print(word_of_the_day)
+    print(useless_fact)
     print(recipe)
-    print(papers)
+    print(arxiv_papers)
     print(poem)
     print(horoscope)
 
-    # Load Google Maps API key
-    load_dotenv()  # Load variables from .env file
-    google_maps_api_key = os.getenv("GOOGLE_MAPS_API_KEY")  # Get the key
+    # Load Google Maps API key from .env file
+    load_dotenv()
+    google_maps_api_key = os.getenv("GOOGLE_MAPS_API_KEY")
 
-    geolocation_coordinates = {
+    # Set up bounding coordinates for Singapore as default location
+    bounding_coords = {
         "center": {"latitude": 1.357107, "longitude": 103.8194992},
         "low": {"latitude": 1.1285402, "longitude": 103.5666667},
         "high": {"latitude": 1.5143183, "longitude": 104.5716696},
     }
 
+    # Test get_places: using a text query and filtering options
     text_query = "fried chicken"
     places = get_places(
         api_key=google_maps_api_key,
         text_query=text_query,
-        bounding_coordinates=geolocation_coordinates,
+        bounding_coordinates=bounding_coords,
         place_type="cafe",
         min_rating=4.0,
     )
+
     for i, place in enumerate(places):
         print(f"{i + 1}. Name: {place.get('name', 'N/A')}")
         print(f"Address: {place.get('address', 'N/A')}")
         print(
             f"Rating: {place.get('rating', 'N/A')} ({place.get('user_ratings_total', '0')} ratings)"
         )
-
         reviews = place.get("reviews", [])
         print(f"Total Reviews: {len(reviews)}")
         for review in reviews:
@@ -706,36 +687,33 @@ def main() -> None:
             text = review.get("text", "").strip()
             short_text = text[:80] + ("..." if len(text) > 80 else "")
             print(f'- {reviewer} ({rating}★): "{short_text}"')
-
         print(f"Photo URL: {place.get('photo_url', 'N/A')}")
     print()
 
-    # --- Randomly select a coordinate within the bounding rectangle ---
-    low_lat = geolocation_coordinates["low"]["latitude"]
-    high_lat = geolocation_coordinates["high"]["latitude"]
-    low_lng = geolocation_coordinates["low"]["longitude"]
-    high_lng = geolocation_coordinates["high"]["longitude"]
-
+    # Randomly select a coordinate within the bounding rectangle.
+    low_lat = bounding_coords["low"]["latitude"]
+    high_lat = bounding_coords["high"]["latitude"]
+    low_lng = bounding_coords["low"]["longitude"]
+    high_lng = bounding_coords["high"]["longitude"]
     random_coordinates = (
         random.uniform(low_lat, high_lat),
         random.uniform(low_lng, high_lng),
     )
 
-    # Call the function using a list of place types.
-    places = get_nearby_places(
+    # Test get_nearby_places using a list of place types.
+    nearby_places = get_nearby_places(
         api_key=google_maps_api_key,
         coordinates=random_coordinates,
         place_types=["restaurant", "tourist_attraction"],
         search_radius=1000,
         page_size=5,
     )
-    for i, place in enumerate(places):
+    for i, place in enumerate(nearby_places):
         print(f"{i + 1}. Name: {place.get('name', 'N/A')}")
         print(f"Address: {place.get('address', 'N/A')}")
         print(
             f"Rating: {place.get('rating', 'N/A')} ({place.get('user_ratings_total', '0')} ratings)"
         )
-
         reviews = place.get("reviews", [])
         print(f"Total Reviews: {len(reviews)}")
         for review in reviews:
@@ -744,7 +722,6 @@ def main() -> None:
             text = review.get("text", "").strip()
             short_text = text[:80] + ("..." if len(text) > 80 else "")
             print(f'- {reviewer} ({rating}★): "{short_text}"')
-
         print(f"Photo URL: {place.get('photo_url', 'N/A')}")
     print()
 

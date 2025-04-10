@@ -8,3 +8,5 @@ omegaconf
 lxml
 boto3
 tqdm
+rich
+python-json-logger
