@@ -1,11 +1,11 @@
 import logging
+import os
 import random
 from typing import Any, Dict, List, Optional
 
 import requests
 from bs4 import BeautifulSoup
 from dotenv import load_dotenv
-import os
 
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"

@@ -1,368 +1,369 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <title>Good Morning Zack! - {{ datetime }}</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,400;0,700;1,400&family=Lato:wght@400;700&family=Georgia&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      /* Core colors and layout variables */
-      --bg-gradient-start: #f8f9fa;
-      --bg-gradient-end: #e9ecef;
-      --container-bg: #ffffff;
-      --primary-accent: #4a148c;
-      --secondary-accent: #00695c;
-      --tertiary-accent: #ffab00;
-      --text-color: #212529;
-      --light-text: #6c757d;
-      --border-color: #dee2e6;
+    <meta charset="utf-8">
+    <title>Good Morning {{ recipient_name }}! - {{ date }}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,400;0,700;1,400&family=Oswald:wght@400;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        :root {
+            --journal-bg: #f5f5dc; /* Beige */
+            --body-bg-fallback: #d2b48c; /* Tan */
+            --header-color: #5d4037; /* Dark Brown */
+            --text-color: #4e342e; /* Brown Text */
+            --accent-green: #388e3c; /* Green */
+            --accent-gold: #b8860b; /* DarkGoldenrod */
+            --accent-steel: #78909c; /* Blue Grey */
+            --light-text: #8d6e63; /* Brownish Grey */
+            --border-color: #795548; /* Brown */
+            /* --content-block-bg: #ffffff; Removed */
+            --table-cell-bg: #fafafa; /* Off-white */
+        }
 
-      /* Content Wrapper Background Settings (still using var for easier global adjustment if supported/needed) */
-      --wrapper-bg-color-rgb: 255, 255, 255;
-      --wrapper-bg-opacity: 0.85;
+        body {
+            font-family: 'Merriweather', serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            -webkit-text-size-adjust: 100%;
+            -ms-text-size-adjust: 100%;
+        }
 
-      /* Base BG for Quote/Scripture Blocks (applied inline now) */
-      /* --quote-scripture-block-bg: rgba(255, 255, 255, 0.6); */
-    }
+        .email-wrapper-cell { padding: 10px; }
 
-    body {
-      font-family: 'Lato', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      line-height: 1.7;
-      color: var(--text-color);
-      max-width: 800px;
-      margin: 0 auto;
-      padding: 20px;
-      background: linear-gradient(to bottom, var(--bg-gradient-start), var(--bg-gradient-end));
-    }
+        .container {
+            max-width: 700px;
+            background-color: var(--journal-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 4px;
+            margin: 15px auto;
+            padding: 20px 25px 30px 25px;
+            box-shadow: 0 5px 12px rgba(0, 0, 0, 0.3);
+        }
 
-    .container {
-      background-color: var(--container-bg);
-      border-radius: 16px;
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
-      padding: 35px 40px;
-      margin-bottom: 30px;
-      border-top: 5px solid var(--primary-accent);
-      position: relative;
-      overflow: hidden;
-    }
+        /* Header Block Styling */
+        .header-block {
+             padding: 15px;
+             margin-bottom: 25px;
+             border-radius: 4px;
+             border: 1px solid #ddd; /* Subtle border */
+        }
+        header { text-align: center; margin: 0; border-bottom: none; padding-bottom: 0; } /* Simplified header */
+        h1 { font-family: 'Oswald', sans-serif; font-size: 28px; color: var(--header-color); margin: 0 0 8px 0; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+        header .subtitle { font-size: 14px; color: var(--light-text); margin-bottom: 12px; }
+        header .zen-quote { font-size: 16px; font-style: italic; color: var(--text-color); margin: 0 auto; max-width: 90%; }
+        header .zen-quote span { display: block; text-align: right; font-size: 14px; color: var(--light-text); margin-top: 5px; }
 
-    header {
-      text-align: center;
-      margin-bottom: 40px;
-      border-bottom: 1px solid var(--border-color);
-      padding-bottom: 25px;
-    }
+        /* Section Styling - Now includes background inline */
+        .section {
+            margin-bottom: 25px;
+            padding: 15px 18px; /* Padding for content */
+            border-radius: 4px;
+            border: 1px solid #ccc; /* Default border */
+            /* background-color applied inline */
+        }
+        /* Removed :first-of-type border rule, border applied inline or above */
+        /* Remove dashed border-top as sections have full borders now */
+        .section { border-top: none; }
 
-    h1 {
-      font-family: 'Merriweather', serif;
-      font-size: 34px;
-      color: var(--primary-accent);
-      margin-bottom: 5px;
-      font-weight: 700;
-    }
 
-    header p {
-      font-size: 16px;
-      color: var(--light-text);
-    }
+        h2 {
+            font-family: 'Oswald', sans-serif; font-weight: 700; font-size: 19px;
+            color: var(--accent-green); margin: 0 0 15px 0; padding-bottom: 5px;
+            border-bottom: 2px solid var(--border-color); /* Keep header underline */
+            display: flex; align-items: center; text-transform: uppercase;
+        }
+        h2 .icon { margin-right: 10px; font-size: 1.1em; color: var(--accent-green);}
 
-    /* === SECTION STYLING (Background applied inline) === */
-    .section {
-      padding: 15px;
-      margin-bottom: 30px;
-      border-radius: 12px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
-      border-top: 1px solid #eee;
-      position: relative;
-    }
-    .section:first-of-type { border-top: none; }
+        /* Content block class - only used where specific inner styling needed beyond section bg */
+        .content-block {
+            /* Only keep styles NOT related to background/border/padding if needed */
+            margin-top: 10px;
+        }
 
-    /* === CONTENT WRAPPER (Sits inside .section) === */
-    .content-wrapper {
-        /* Using CSS variable for easier adjustment, but might need inline if issues */
-        background-color: rgba(var(--wrapper-bg-color-rgb), var(--wrapper-bg-opacity));
-        border-radius: 10px;
-        padding: 25px;
-        position: relative;
-        z-index: 1;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-    }
+        /* Solar Schedule */
+        .solar-grid { text-align: center; margin-top: 10px; font-size: 0; }
+        .solar-item {
+            display: inline-block; width: 95px; /* Increased width slightly */
+            background-color: #ffffff; padding: 8px 4px;
+            border-radius: 4px; border: 1px solid var(--accent-green);
+            text-align: center; vertical-align: top;
+            margin: 5px; font-size: 12px;
+            box-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+        /* Increased image size */
+        .solar-item img { display: block; width: 120px; height: 120px; margin: 0 auto 8px auto; border-radius: 3px; background-color: #fff; object-fit: cover; }
+        .solar-item strong { display: block; font-size: 10px; color: var(--header-color); font-weight: bold; margin-bottom: 4px; text-transform: uppercase; }
+        .solar-item span { font-weight: bold; font-size: 14px; color: var(--accent-green); }
 
-    /* === Content Headers (Inside Wrapper) === */
-    .content-wrapper h2,
-    .content-wrapper .quote-section-title {
-      margin-top: 0;
-      margin-bottom: 20px;
-    }
-    .content-wrapper h2 {
-      font-family: 'Lato', sans-serif;
-      font-weight: 700;
-      font-size: 24px;
-      color: var(--primary-accent);
-      padding-bottom: 10px;
-      border-bottom: 2px solid var(--secondary-accent);
-      display: flex;
-      align-items: center;
-    }
-    .content-wrapper h2 .icon { margin-right: 12px; font-size: 22px; color: var(--secondary-accent); flex-shrink: 0; }
-    .content-wrapper .quote-section-title { font-family: 'Merriweather', serif; font-style: normal; text-align: center; font-size: 22px; color: var(--primary-accent); font-weight: bold; }
+        /* Fact Block */
+        .fact-block p { font-size: 15px; margin: 0; }
 
-    /* === QUOTE/SCRIPTURE Blocks (Inside Wrapper) === */
-    .content-block {
-        padding: 20px;
-        margin: 15px 0;
-        border-radius: 6px;
-        text-align: center;
-        border: 1px solid rgba(0,0,0,0.08);
-        /* Specific background applied inline */
-    }
-    .content-block.quote:not(.zen) { border-left: 5px solid var(--primary-accent); }
-    .content-block.quote.zen { border-left: 5px solid var(--secondary-accent); }
-    .content-block.scripture { border-left: 5px solid #c2185b; font-family: 'Georgia', 'Times New Roman', serif; }
+        /* Word of the Day Block */
+        .wod-block .word { font-size: 24px; font-family: 'Oswald', sans-serif; font-weight: 700; color: var(--header-color); display: block; margin-bottom: 5px; text-transform: uppercase; }
+        .wod-block .pos { font-style: italic; color: var(--light-text); margin-bottom: 10px; display: block; font-size: 14px;}
+        .wod-block .definition { font-size: 15px; }
 
-    .quote-text { font-family: 'Merriweather', serif; font-size: 21px; font-style: italic; color: var(--text-color); line-height: 1.6; margin-bottom: 15px; position: relative; padding: 0 15px; }
-    .quote-text::before, .quote-text::after { font-family: 'Georgia', serif; font-size: 36px; opacity: 0.5; position: absolute; }
-    .content-block.quote:not(.zen) .quote-text::before, .content-block.quote:not(.zen) .quote-text::after { color: var(--primary-accent); }
-    .content-block.quote.zen .quote-text::before, .content-block.quote.zen .quote-text::after { color: var(--secondary-accent); }
-    .quote-text::before { content: '“'; left: -10px; top: -10px; }
-    .quote-text::after { content: '”'; right: -10px; bottom: -15px; }
-    .quote-author { font-family: 'Lato', sans-serif; font-size: 16px; font-weight: 700; color: var(--light-text); margin-top: 20px; }
-    .quote-author::before { content: "— "; }
-    .scripture-verse { font-family: 'Georgia', 'Times New Roman', serif; font-size: 19px; font-style: italic; color: #c2185b; line-height: 1.8; margin-bottom: 15px; }
-    .scripture-reference { font-family: 'Lato', sans-serif; font-weight: bold; color: #ad1457; font-size: 16px; }
+        /* Recipe Block */
+        .recipe-name { font-family: 'Oswald', sans-serif; font-size: 18px; font-weight: 700; color: var(--header-color); text-align: center; margin-bottom: 15px; }
+        .recipe-block img { display: block; max-width: 80%; height: auto; margin: 0 auto 20px auto; border: 2px solid var(--border-color); border-radius: 4px; }
+        .recipe-block .instructions { margin-top: 15px; }
+        .recipe-block h3 { font-size: 16px; color: var(--header-color); margin-bottom: 8px; font-weight: bold; font-family: 'Oswald', sans-serif; }
+        .recipe-block ol { padding-left: 25px; margin: 0; font-size: 14px; }
+        .recipe-block li { margin-bottom: 8px; }
 
-    .quote-divider { border: 0; height: 1px; background-image: linear-gradient(to right, rgba(0, 0, 0, 0), var(--secondary-accent), rgba(0, 0, 0, 0)); margin: 40px auto; width: 60%; }
+        /* Restaurant Section */
+        /* Restaurant wrapper no longer needed for background */
+        .restaurant-table { width: 100%; border-collapse: separate; border-spacing: 0 12px; margin-top: 10px; }
+        .restaurant-table td { padding: 12px 15px; vertical-align: top; background-color: var(--table-cell-bg); border: 1px solid #ccc; border-radius: 5px; }
+        .restaurant-photo-cell { width: 110px; padding: 12px 15px 12px 12px; text-align: center; }
+        .restaurant-photo { display: block; width: 100px; height: auto; border: 1px solid var(--border-color); border-radius: 4px; background-color: #eee; margin: 0 auto; }
+        .restaurant-details h3 { font-size: 17px; margin: 0 0 5px 0; color: var(--header-color); font-family: 'Oswald', sans-serif; font-weight: 700; text-transform: uppercase;}
+        .restaurant-details .address { font-size: 12px; color: var(--light-text); margin-bottom: 8px; }
+        .restaurant-details .rating { font-size: 13px; color: var(--light-text); margin-bottom: 10px; }
+        .restaurant-details .rating .stars { color: var(--accent-gold); font-size: 1.2em; letter-spacing: 1px;}
+        .restaurant-details h4 { font-size: 14px; margin: 10px 0 5px 0; color: var(--accent-green); font-weight: bold; text-transform: uppercase; font-family: 'Oswald', sans-serif; letter-spacing: 0.5px;}
+        .restaurant-details ul { list-style: none; padding: 0; margin: 0; font-size: 13px; }
+        .restaurant-details li { margin-bottom: 8px; background-color: #fff; padding: 8px 10px; border-radius: 3px; border: 1px solid #eee;}
+        /* Reviewer name and stars on the same line */
+        .restaurant-details li .reviewer-line { margin-bottom: 3px; display: block; } /* Container for name+stars */
+        .restaurant-details li .reviewer { font-weight: bold; color: var(--text-color); font-size: 0.95em; display: inline-block; /* Make inline */ }
+        .restaurant-details li .review-rating { display: inline-block; margin-left: 8px; color: var(--accent-gold); font-size: 0.9em;}
+        .restaurant-details li .review-text { color: #555; display: block; } /* Keep text block */
 
-    /* === DAYLIGHT SECTION === */
-    .sunrise-data { display: flex; justify-content: center; align-items: center; flex-wrap: wrap; margin-top: 10px; gap: 15px; text-align: center; }
-    .sunrise-item { flex-basis: 100px; padding: 15px 10px; background-color: rgba(227, 242, 253, 0.9); border-radius: 10px; border: 1px solid #bbdefb; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
-    .daylight-img { display: block; width: 60px; height: 60px; object-fit: cover; border-radius: 50%; margin: 0 auto 15px auto; background-color: #fafafa; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-    .sunrise-item strong { display: block; margin-bottom: 8px; font-size: 13px; color: #1e88e5; text-transform: uppercase; letter-spacing: 0.5px; }
-    .sunrise-time { font-size: 18px; font-weight: bold; color: var(--primary-accent); }
+        /* ArXiv Section */
+        /* Arxiv wrapper no longer needed for background */
+        .arxiv-query-display { font-style: italic; color: var(--light-text); font-size: 14px; margin-bottom: 10px; display: block;} /* Ensure it's block */
+        .arxiv-item { background-color: #ffffff; border: 1px solid #e0e0e0; border-radius: 4px; padding: 12px 15px; margin-bottom: 12px; }
+        .arxiv-label { font-weight: bold; color: var(--accent-steel); font-size: 0.9em; }
+        .arxiv-title { font-weight: bold; color: var(--text-color); font-size: 16px; margin-bottom: 5px; }
+        .arxiv-abstract { font-size: 14px; margin-bottom: 8px; line-height: 1.5; }
+        .arxiv-meta { font-size: 12px; color: var(--light-text); margin-top: 5px;}
+        .arxiv-link { font-size: 12px; word-break: break-all; margin-top: 5px; }
+        .arxiv-link a { color: var(--accent-green); text-decoration: none; font-weight: bold; }
+        .arxiv-link a:hover { text-decoration: underline; }
 
-    /* === OTHER CONTENT BLOCKS (Inside Wrapper) === */
-    .fact-block { font-size: 18px; text-align: center; padding: 15px; border-radius: 8px; margin-top: 15px; /* Background applied inline */ }
-    .word-details { padding: 25px; border-radius: 10px; margin-top: 15px; text-align: center; border: 1px solid #ffe0b2; /* Background applied inline */ }
-    .word-highlight { font-family: 'Merriweather', serif; font-size: 32px; font-weight: 700; color: #e65100; margin-bottom: 10px; display: block; }
-    .word-pos { font-style: italic; color: var(--light-text); margin-bottom: 15px; font-size: 16px; }
-    .word-definition { font-size: 17px; line-height: 1.7; }
+        /* Horoscope Block */
+        .horoscope-block .sign { font-weight: bold; font-size: 18px; font-family: 'Oswald', sans-serif; color: var(--accent-steel); text-transform: uppercase; display: block; margin-bottom: 5px; }
+        .horoscope-block p { font-size: 15px; margin: 0; }
+        .horoscope-block .date { font-size: 0.9em; color: var(--light-text); margin-top: 8px; display: block; font-style: italic; }
 
-    .paper-item { padding: 20px; border-radius: 8px; margin-bottom: 20px; border: 1px solid var(--border-color); /* Background applied inline */ }
-    .paper-title { font-weight: 700; font-size: 17px; color: var(--primary-accent); margin-bottom: 8px; }
-    .paper-abstract { font-size: 15px; margin-bottom: 12px; color: var(--text-color); line-height: 1.6; }
-    .paper-meta { font-size: 13px; color: var(--light-text); margin-bottom: 15px; }
-    .paper-link-container { margin-top: 10px; font-size: 14px; }
-    .paper-link-container strong { color: var(--primary-accent); }
-    .paper-link-container a { color: var(--secondary-accent); text-decoration: none; word-break: break-all; }
-    .paper-link-container a:hover { text-decoration: underline; }
+        /* Cat GIF Block */
+        .cat-gif-block img { display: block; max-width: 85%; height: auto; margin: 0 auto; border: 2px solid var(--border-color); border-radius: 4px; }
 
-    .poem-block { padding: 25px 30px; border-radius: 8px; margin-top: 15px; border-left: 4px solid #cddc39; /* Background applied inline */ }
-    .poem-title { font-family: 'Merriweather', serif; font-size: 20px; font-weight: bold; color: #827717; margin-bottom: 8px; }
-    .poem-author { font-style: italic; color: var(--light-text); margin-bottom: 20px; font-size: 15px; }
-    .poem-text { font-family: 'Georgia', serif; font-size: 16px; line-height: 1.8; color: #333; white-space: pre-line; }
+        /* Footer */
+        .footer { text-align: center; margin-top: 30px; padding-top: 15px; border-top: 1px solid var(--border-color); color: var(--light-text); font-size: 12px; }
 
-    .cat-gif { display: block; margin: 25px auto; max-width: 80%; border-radius: 12px; box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1); }
+        /* Responsive Adjustments */
+        @media (max-width: 650px) {
+            .email-wrapper-cell { padding: 5px; }
+            .container { padding: 10px 15px 15px 15px; }
+            h1 { font-size: 22px; }
+            h2 { font-size: 17px; }
+            /* Update section padding for mobile */
+            .section, .header-block { padding: 12px; }
+            header .zen-quote { font-size: 15px; }
+            .solar-item { width: calc(33% - 12px); }
+            .solar-item img { width: 35px; height: 35px; } /* Adjusted size */
+            .restaurant-table { padding: 0; border-spacing: 0; }
+            .restaurant-table td { padding: 10px 8px; display: block; width: auto !important; border-radius: 0; border: none; background: none; }
+            .restaurant-table tr { display: block; margin-bottom: 15px; background-color: var(--table-cell-bg); border: 1px solid #ccc; border-radius: 5px; padding: 10px;}
+            .restaurant-photo-cell { text-align: center; padding: 0 0 10px 0;}
+            .restaurant-photo { width: 130px; }
+            .arxiv-abstract { font-size: 13px; }
+            .arxiv-item { padding: 10px; }
+        }
 
-    /* === RECIPE SECTION === */
-    .recipe-content { margin-top: 10px; text-align: center; }
-    .recipe-img { max-width: 80%; height: auto; border-radius: 12px; box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1); display: block; margin: 0 auto 20px auto; }
-    .action-link { display: inline-block; background-color: var(--secondary-accent); color: white; padding: 10px 25px; border-radius: 25px; text-decoration: none; font-size: 15px; font-weight: bold; margin-top: 0; transition: background-color 0.3s, transform 0.2s; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); }
-    .action-link:hover { background-color: #004d40; transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); }
-    .youtube-thumb-link { display: inline-block; position: relative; max-width: 70%; margin-top: 20px; margin-bottom: 20px; }
-    .youtube-thumb { display: block; width: 100%; height: auto; border-radius: 10px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); }
-    .recipe-instructions { text-align: left; margin-top: 30px; padding: 0 10px; }
-    .recipe-instructions strong { display: block; margin-bottom: 15px; font-size: 18px; color: var(--primary-accent); }
-    .recipe-steps { list-style-type: none; counter-reset: recipe-counter; padding-left: 0; margin-top: 10px; }
-    .recipe-steps li { counter-increment: recipe-counter; margin-bottom: 15px; position: relative; padding-left: 40px; line-height: 1.7; }
-    .recipe-steps li::before { content: counter(recipe-counter); position: absolute; left: 0; top: 0; background-color: var(--secondary-accent); color: white; width: 28px; height: 28px; border-radius: 50%; font-weight: bold; font-size: 14px; text-align: center; line-height: 28px; }
-
-    /* === FOOTER === */
-    .footer { text-align: center; margin-top: 50px; padding-top: 20px; border-top: 1px solid var(--border-color); color: var(--light-text); font-size: 14px; }
-
-     /* === General Paragraph Styling (within wrapper) === */
-    .content-wrapper > p { margin-bottom: 15px; }
-
-    /* === RESPONSIVENESS === */
-    @media (max-width: 600px) {
-      body { padding: 10px; }
-      .container { padding: 15px; }
-      h1 { font-size: 28px; }
-      .content-wrapper { padding: 15px; }
-      h2 { font-size: 20px; margin-bottom: 15px;}
-      .quote-text { font-size: 19px; }
-      .word-highlight { font-size: 28px; }
-      .sunrise-data { flex-direction: column; align-items: center; gap: 10px;}
-      .sunrise-item { flex-basis: auto; width: 80%; margin-bottom: 10px; }
-      .recipe-img { max-width: 95%; }
-      .youtube-thumb-link { max-width: 80%; }
-      .cat-gif { max-width: 95%; }
-      .recipe-steps li { padding-left: 35px; }
-      .recipe-steps li::before { width: 24px; height: 24px; line-height: 24px; font-size: 13px;}
-      .content-block { padding: 15px; }
-      .poem-block { padding: 15px 20px; }
-      .paper-abstract { font-size: 14px; }
-      .word-details, .paper-item, .poem-block { padding: 15px; }
-      .fact-block { padding: 10px; font-size: 16px; }
-    }
-  </style>
+    </style>
 </head>
-<body>
-  <div class="container">
-    <header>
-      <h1>Zack's Daily Briefing</h1>
-      <p>{{ date }} - {{ time }}</p>
-    </header>
+<body bgcolor="#d2b48c" background="https://i.pinimg.com/736x/69/d3/4f/69d34fab8f7d9d13a934296b29509630.jpg" style="background-color: #d2b48c; background-image: url('https://i.pinimg.com/736x/69/d3/4f/69d34fab8f7d9d13a934296b29509630.jpg'); background-position: center top; background-repeat: repeat;">
 
-    <!-- Section Order -->
+    <table width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation">
+        <tr>
+            <td align="center" class="email-wrapper-cell">
+                <div class="container">
+                    <!-- Header Block with Translucent Background -->
+                    <div class="header-block" style="background-color: rgba(245, 245, 220, 0.8); border-color: #eee;"> {# Beige Translucent #}
+                        <header>
+                            <h1>Good Morning {{ recipient_name }}!!!</h1>
+                            <p class="subtitle">{{ datetime }}</p>
+                            <p class="zen-quote">
+                                <em>{{ zen_quote.quote }}</em>
+                                <br>
+                                <span style="display: block; text-align: right; font-size: 14px; color: var(--light-text); margin-top: 5px;">
+                                    — {{ zen_quote.author }}
+                                </span>
+                            </p>
+                        </header>
+                    </div>
 
-    <!-- 1. Daylight Section -->
-    <!-- **** REPLACE BACKGROUND IMAGE URL **** -->
-    <div class="section section-daylight" style="background-image: url('https://media.istockphoto.com/id/1208486224/photo/chicago-skyline-day-to-night-time-lapse.jpg?s=612x612&w=0&k=20&c=PeSHZaAIh7YX-ULSMvKfuaxB00MLEIQNLpy4WIx1FtQ='); background-size: cover; background-position: center; background-repeat: no-repeat;">
-      <div class="content-wrapper">
-        <h2><span class="icon">☀️</span> Solar Schedulee</h2>
-        <div class="sunrise-data">
-          <div class="sunrise-item"><img src="https://images.unsplash.com/photo-1679027506214-b9e78b7c64dc?fm=jpg&q=60&w=60&h=60&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8bGlnaHQlMjBpbiUyMHRoZSUyMGRhcmt8ZW58MHx8MHx8fDA%3D" alt="First light" class="daylight-img"><strong>First Light</strong><span class="sunrise-time">{{ solar_schedule.first_light }}</span></div>
-          <div class="sunrise-item"><img src="https://pixnio.com/free-images/2019/01/04/2019-01-04-15-07-31-60x60.jpg" alt="Dawn" class="daylight-img"><strong>Dawn</strong><span class="sunrise-time">{{ solar_schedule.dawn }}</span></div>
-          <div class="sunrise-item"><img src="https://christiansforsocialaction.org/wp-content/uploads/2020/01/sunrise-Jonathan-Petersson-Pexels-60x60.jpg" alt="Sunrise" class="daylight-img"><strong>Sunrise</strong><span class="sunrise-time">{{ solar_schedule.sunrise }}</span></div>
-          <div class="sunrise-item"><img src="https://as1.ftcdn.net/jpg/03/01/23/04/1000_F_301230494_yxavf7D6NbizWuJHX1qhBKDi3f22abQP-60x60.jpg" alt="Solar Noon" class="daylight-img"><strong>Solar Noon</strong><span class="sunrise-time">{{ solar_schedule.solar_noon }}</span></div>
-          <div class="sunrise-item"><img src="https://static0.gamerantimages.com/wordpress/wp-content/uploads/2023/07/gojo-s-awakening-60x60.jpg" alt="Golden hour" class="daylight-img"><strong>Golden Hour</strong><span class="sunrise-time">{{ solar_schedule.golden_hour }}</span></div>
-          <div class="sunrise-item"><img src="https://www.parksconservancy.org/sites/default/files/styles/max_650x650/public/field/image/FOFU_20200321_RCW_0037.jpg?itok=lJ-yA08r" alt="Sunset" class="daylight-img"><strong>Sunset</strong><span class="sunrise-time">{{ solar_schedule.sunset }}</span></div>
-          <div class="sunrise-item"><img src="https://www.mountainphotography.com/images/xl/20190813-Dusk-Sky-60x60.jpg" alt="Dusk" class="daylight-img"><strong>Dusk</strong><span class="sunrise-time">{{ solar_schedule.dusk }}</span></div>
-          <div class="sunrise-item"><img src="https://cdna.artstation.com/p/assets/images/images/029/532/344/smaller_square/leopold-scholz-darknight.jpg?1597850874" alt="Last light" class="daylight-img"><strong>Last Light</strong><span class="sunrise-time">{{ solar_schedule.last_light }}</span></div>
-        </div>
-      </div><!-- /.content-wrapper -->
-    </div><!-- /.section -->
+                    <!-- 1. Solar Schedule -->
+                    <div class="section">
+                        <h2><span class="icon">☀️</span> Solar Schedule</h2>
+                        <div class="content-block">
+                            <div class="solar-grid">
+                                <div class="solar-item">
+                                    <img src="https://media.makeameme.org/created/let-there-be-986084fdfc.jpg" alt="First Light">
+                                    <strong>First Light</strong><span>{{ solar_schedule.first_light }}</span>
+                                </div>
+                                <div class="solar-item">
+                                    <img src="https://images.pexels.com/photos/2371901/pexels-photo-2371901.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500" alt="Dawn">
+                                    <strong>Dawn</strong><span>{{ solar_schedule.dawn }}</span>
+                                </div>
+                                <div class="solar-item">
+                                    <img src="https://media.tenor.com/ctl4Dak8qGcAAAAe/teletubby-sun-sun.png" alt="Sunrise">
+                                    <strong>Sunrise</strong><span>{{ solar_schedule.sunrise }}</span>
+                                </div>
+                                <div class="solar-item">
+                                    <img src="https://i.pinimg.com/564x/2d/7f/7a/2d7f7abecc8422aecfc355dc32746573.jpg" alt="Noon">
+                                    <strong>Noon</strong><span>{{ solar_schedule.solar_noon }}</span>
+                                </div>
+                                <div class="solar-item">
+                                    <img src="https://i.ytimg.com/vi/DlUkRuqFZL4/maxresdefault.jpg" alt="Golden Hour">
+                                    <strong>Golden Hour</strong><span>{{ solar_schedule.golden_hour }}</span>
+                                </div>
+                                <div class="solar-item">
+                                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSw6ZTNqs4jEASx4dS7GhPf4lKTUNkXwOhEVw&s" alt="Sunset">
+                                    <strong>Sunset</strong><span>{{ solar_schedule.sunset }}</span>
+                                </div>
+                                <div class="solar-item">
+                                    <img src="https://preview.redd.it/the-difference-between-dusk-and-twilight-v0-3xona7wl7u7d1.jpeg?width=1000&format=pjpg&auto=webp&s=88a6fb3a4f5b5ad4f0460441d08a94a4b49b8244" alt="Dusk">
+                                    <strong>Dusk</strong><span>{{ solar_schedule.dusk }}</span>
+                                </div>
+                                <div class="solar-item">
+                                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/00/%D0%A1%D0%B2%D0%B5%D1%82_%D0%BE%D1%82_%D0%B4%D0%B5%D1%80%D0%B5%D0%B2%D0%BD%D0%B8_-_panoramio.jpg/1200px-%D0%A1%D0%B2%D0%B5%D1%82_%D0%BE%D1%82_%D0%B4%D0%B5%D1%80%D0%B5%D0%B2%D0%BD%D0%B8_-_panoramio.jpg" alt="Last Light">
+                                    <strong>Last Light</strong><span>{{ solar_schedule.last_light }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
-    <!-- 2. Zen Quote -->
-    <!-- **** REPLACE BACKGROUND IMAGE URL **** -->
-    <div class="section section-zen-quote" style="background-image: url('https://www.verywellmind.com/thmb/T3Yy4laB34-ShD2tRpOFNooxhWY=/2122x0/filters:no_upscale():max_bytes(150000):strip_icc()/GettyImages-593384542-5c5b3eb546e0fb00017dcf7f.jpg'); background-size: cover; background-position: center; background-repeat: no-repeat;">
-       <div class="content-wrapper">
-         <h3 class="quote-section-title">Zen Quote of the Day</h3>
-         <!-- Inline style for block background -->
-         <div class="content-block quote zen" style="background-color: rgba(224, 247, 250, 0.85);">
-             <div class="quote-text">{{ zen_quote.quote }}</div>
-             <div class="quote-author">{{ zen_quote.author }}</div>
-         </div>
-       </div><!-- /.content-wrapper -->
-    </div><!-- /.section -->
+                    <!-- 2. Interesting Fact -->
+                    <div class="section fact-block" style="background-color: rgba(241, 248, 233, 0.85); border-color: var(--accent-green);"> {# Light Green Translucent #}
+                        <h2><span class="icon">💡</span> Interesting Fact</h2>
+                        <p>{{ interesting_fact }}</p>
+                    </div>
 
-    <!-- Separator -->
-    <hr class="quote-divider">
+                    <!-- 3. Word of the Day -->
+                    <div class="section wod-block" style="background-color: rgba(243, 229, 245, 0.85); border-color: #ab47bc;"> {# Light Purple Translucent #}
+                        <h2><span class="icon">📖</span> Word of the Day</h2>
+                        <span class="word">{{ wod.word }}</span>
+                        <span class="pos">({{ wod.part_of_speech }})</span>
+                        <p class="definition">{{ wod.definition }}</p>
+                    </div>
 
-    <!-- 3. Stoic Quote -->
-    <!-- **** REPLACE BACKGROUND IMAGE URL **** -->
-    <div class="section section-stoic-quote" style="background-image: url('https://live-production.wcms.abc-cdn.net.au/3a2dd1ed4568c13bd5b03ff02376f8e7?impolicy=wcms_crop_resize&cropH=2813&cropW=5000&xPos=0&yPos=72&width=862&height=485'); background-size: cover; background-position: center; background-repeat: no-repeat;">
-       <div class="content-wrapper">
-          <h3 class="quote-section-title">Stoic Quote of the Day</h3>
-           <!-- Inline style for block background -->
-          <div class="content-block quote" style="background-color: rgba(237, 231, 246, 0.85);">
-              <div class="quote-text">{{ stoic_quote.quote }}</div>
-              <div class="quote-author">{{ stoic_quote.author }}</div>
-          </div>
-       </div><!-- /.content-wrapper -->
-    </div><!-- /.section -->
+                    <!-- 4. Recipe of the Day -->
+                    <div class="section recipe-block" style="background-color: rgba(239, 235, 233, 0.85); border-color: var(--border-color);"> {# Light Brown-Gray Translucent #}
+                        <h2><span class="icon">🔥</span> Recipe of the Day</h2>
+                        <p class="recipe-name">{{ recipe.name }}</p>
+                        {% if recipe.image_url %}
+                        <img src="{{ recipe.image_url }}" alt="Image of {{ recipe.name }}">
+                        {% endif %}
+                        <div class="instructions">
+                            <h3>Instructions:</h3>
+                            <ol>
+                                {% set instructions_list = recipe.instructions.splitlines() %}
+                                {% for instruction in instructions_list %}
+                                    {% if instruction.strip() %}<li>{{ instruction.strip() }}</li>{% endif %}
+                                {% endfor %}
+                            </ol>
+                        </div>
+                    </div>
 
-    <!-- 4. Scripture Section -->
-    <!-- **** REPLACE BACKGROUND IMAGE URL **** -->
-    <div class="section section-scripture" style="background-image: url('https://www.americamagazine.org/sites/default/files/main_image/timothy-eberly-ydxJsi9ouOk-unsplash.jpg'); background-size: cover; background-position: center; background-repeat: no-repeat;">
-      <div class="content-wrapper">
-        <h2><span class="icon">📖</span> Verse for Reflection</h2>
-         <!-- Inline style for block background -->
-        <div class="content-block scripture" style="background-color: rgba(252, 228, 236, 0.85);">
-          <div class="scripture-verse">"{{ bible_verse.verse }}"</div>
-          <div class="scripture-reference">{{ bible_verse.reference }}</div>
-        </div>
-      </div><!-- /.content-wrapper -->
-    </div><!-- /.section -->
+                    <!-- 5. Restaurant Recommendations -->
+                    {% if restaurants %}
+                    <div class="section" style="background-color: rgba(245, 255, 250, 0.85); border-color: #a5d6a7;"> {# MintCream Translucent #}
+                         <h2><span class="icon">🗺️</span> Restaurants Serving "{{ text_query }}"</h2>
+                         <table class="restaurant-table" border="0" cellpadding="0" cellspacing="0" width="100%">
+                             <tbody>
+                                 {% for restaurant in restaurants[:3] %}
+                                 <tr>
+                                     <td class="restaurant-photo-cell" width="110">
+                                         {% if restaurant.photo_url %}
+                                         <img src="{{ restaurant.photo_url }}" alt="Photo of {{ restaurant.name }}" class="restaurant-photo" width="100">
+                                         {% else %}
+                                         <img src="https://via.placeholder.com/100x75.png?text=Image" alt="Placeholder" class="restaurant-photo" width="100">
+                                         {% endif %}
+                                     </td>
+                                     <td class="restaurant-details">
+                                         <h3>{{ restaurant.name }}</h3>
+                                         <p class="address">{{ restaurant.address }}</p>
+                                         <p class="rating">
+                                             <span class="stars">
+                                                 {% set rating_val = restaurant.rating|default(0)|round|int %}
+                                                 {% for i in range(rating_val) %}⭐{% endfor %}{% for i in range(5-rating_val) %}<span style="opacity: 0.3;">⭐</span>{% endfor %}
+                                             </span>
+                                              ({{ restaurant.rating|round(1) if restaurant.rating else 'N/A' }}) - {{ restaurant.user_ratings_total or '?' }} Ratings
+                                         </p>
+                                         {% if restaurant.reviews %}
+                                             <h4>Reviews:</h4>
+                                             <ul>
+                                             {% for review in restaurant.reviews %}
+                                                 <li>
+                                                      <div class="reviewer-line"> {# Wrap reviewer and stars #}
+                                                          <span class="reviewer">{{ review.reviewer_name or 'Anonymous' }}:</span>
+                                                          <span class="review-rating">
+                                                             {% set review_rating_val = review.rating|default(0)|round|int %}
+                                                             {% for i in range(review_rating_val) %}⭐{% endfor %}{% for i in range(5-review_rating_val) %}<span style="opacity: 0.3;">⭐</span>{% endfor %}
+                                                         </span>
+                                                      </div>
+                                                      <span class="review-text">"{{ review.text[:200] }}{% if review.text|length > 200 %}..."{% endif %}"</span>
+                                                 </li>
+                                             {% endfor %}
+                                             </ul>
+                                         {% endif %}
+                                     </td>
+                                 </tr>
+                                 {% endfor %}
+                             </tbody>
+                         </table>
+                         {% else %}
+                             <p>Could not find suitable restaurants for "{{ recipe.name }}" nearby.</p>
+                         {% endif %}
+                    </div>
 
-    <!-- 5. Interesting Fact -->
-    <!-- **** REPLACE BACKGROUND IMAGE URL **** -->
-    <div class="section section-fact" style="background-image: url('https://cdn.tinybuddha.com/wp-content/uploads/2020/12/Curious-boy.-2jpg.jpg'); background-size: cover; background-position: center; background-repeat: no-repeat;">
-      <div class="content-wrapper">
-        <h2><span class="icon">💡</span> Interesting Fact</h2>
-         <!-- Inline style for block background (Pastel Pink) -->
-        <p class="fact-block" style="background-color: rgba(255, 248, 225, 0.9);">
-            {{ interesting_fact }}
-        </p>
-      </div><!-- /.content-wrapper -->
-    </div><!-- /.section -->
+                    <!-- 6. ArXiv Papers -->
+                    {% if arxiv_papers %}
+                    <div class="section" style="background-color: rgba(227, 242, 253, 0.85); border-color: var(--accent-steel);"> {# Light Blue Translucent #}
+                        <h2><span class="icon">🔭</span> Latest Research: {{ arxiv_query | capitalize }}</h2>
+                            {% for paper in arxiv_papers %}
+                                <div class="arxiv-item">
+                                    <div class="arxiv-title">{{ paper.title }}</div>
+                                    <p><span class="arxiv-label">Abstract:</span> <span class="arxiv-abstract">{{ paper.abstract[:250] }}{% if paper.abstract|length > 250 %}...{% endif %}</span></p>
+                                    <p class="arxiv-meta"><span class="arxiv-label">Submitted:</span> {{ paper.published }}</p>
+                                    <p class="arxiv-link"><span class="arxiv-label">Link:</span> <a href="{{ paper.pdf_link }}" target="_blank">View PDF</a></p>
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <p>No new research papers found for "{{ arxiv_query }}".</p>
+                        {% endif %}
+                    </div>
 
-    <!-- 6. Culinary Inspiration -->
-    <!-- **** REPLACE BACKGROUND IMAGE URL **** -->
-    <div class="section section-recipe" style="background-image: url('https://img.buzzfeed.com/buzzfeed-static/static/2020-09/8/17/asset/a536acd031be/sub-buzz-268-1599586880-8.jpg'); background-size: cover; background-position: center; background-repeat: no-repeat;">
-       <div class="content-wrapper">
-         <h2><span class="icon">🍲</span> Recipe of the Day: {{ recipe.name }}</h2>
-         <div class="recipe-content">
-              {% if recipe.image_url %}<img src="{{ recipe.image_url }}" alt="Image of {{ recipe.name }}" class="recipe-img">{% endif %}
-              {% if recipe.youtube_url %}<a href="{{ recipe.youtube_url }}" target="_blank" class="action-link">Watch Tutorial</a>{% endif %}
-              {% if recipe.youtube_url %}<div style="margin-top: 20px;"><a href="{{ recipe.youtube_url }}" target="_blank" class="youtube-thumb-link"><img src="https://img.youtube.com/vi/{{ recipe.youtube_url.split('v=')[-1].split('&')[0] }}/hqdefault.jpg" alt="YouTube Tutorial Thumbnail" class="youtube-thumb"></a></div>{% endif %}
-              <div class="recipe-instructions"><strong>Instructions:</strong><ol class="recipe-steps">{% set instructions_list = recipe.instructions.splitlines() %}{% for instruction in instructions_list %}{% if instruction.strip() %}<li>{{ instruction.strip() }}</li>{% endif %}{% endfor %}</ol></div>
-         </div>
-       </div><!-- /.content-wrapper -->
-    </div><!-- /.section -->
+                    <!-- 7. Horoscope -->
+                    <div class="section horoscope-block" style="background-color: rgba(237, 231, 246, 0.85); border-color: #b39ddb;"> {# Light Purple Translucent #}
+                        <h2><span class="icon">✨</span> Horoscope</h2>
+                         <span class="sign">{{ horoscope.sign }}</span>
+                         <p>{{ horoscope.prediction }}</p>
+                         <span class="date">({{ horoscope.date }})</span>
+                    </div>
 
-    <!-- 7. ArXiv Papers -->
-    <!-- **** REPLACE BACKGROUND IMAGE URL **** -->
-    <div class="section section-research" style="background-image: url('https://www.computersciencedegreehub.com/wp-content/uploads/2023/07/shutterstock_2284126663-scaled.jpg'); background-size: cover; background-position: center; background-repeat: no-repeat;">
-       <div class="content-wrapper">
-         <h2><span class="icon">📚</span> Today's Research: {{ arxiv_query | capitalize }}</h2>
-         <p>Insights from {{ arxiv_papers|length }} recent paper(s):</p>
-         {% for paper in arxiv_papers %}
-           <!-- Inline style for block background (Pastel Blue) -->
-           <div class="paper-item" style="background-color: rgba(232, 245, 253, 0.9);">
-               <div class="paper-title">{{ paper.title }}</div>
-               <div class="paper-abstract">{{ paper.abstract }}</div>
-               <div class="paper-meta"><em>Published: {{ paper.published }}</em></div>
-               <div class="paper-link-container"><strong>Link:</strong> <a href="{{ paper.pdf_link }}" target="_blank">{{ paper.pdf_link }}</a></div>
-           </div>
-         {% else %}
-           <p>No new papers found for "{{ arxiv_query }}" today.</p>
-         {% endfor %}
-       </div><!-- /.content-wrapper -->
-    </div><!-- /.section -->
+                    <!-- 8. Cat of the Day -->
+                    <div class="section cat-gif-block" style="background-color: rgba(241, 248, 233, 0.9); border-color: #c5e1a5;"> {# Lighter Green Translucent #}
+                        <h2><span class="icon">🐾</span> Cat of the Day</h2>
+                        <img src="{{ cat_gif }}" alt="Today's featured feline.">
+                    </div>
 
-    <!-- 8. Vocabulary Section -->
-    <!-- **** REPLACE BACKGROUND IMAGE URL **** -->
-    <div class="section section-wod" style="background-image: url('https://python.land/wp-content/uploads/2021/01/dictionary-jpg.webp'); background-size: cover; background-position: center; background-repeat: no-repeat;">
-       <div class="content-wrapper">
-          <h2><span class="icon">🗣️</span> Word of the Day</h2>
-           <!-- Inline style for block background (Pastel Yellow) -->
-          <div class="word-details" style="background-color: rgba(255, 236, 179, 0.9);">
-            <span class="word-highlight">{{ wod.word }}</span>
-            <p class="word-pos"><em>{{ wod.part_of_speech }}</em></p>
-            <p class="word-definition">{{ wod.definition }}</p>
-          </div>
-       </div><!-- /.content-wrapper -->
-    </div><!-- /.section -->
+                    <div class="footer">
+                        <p>Have a great day!</p>
+                    </div>
+                </div><!-- /.container -->
 
-    <!-- 9. Poem Section -->
-    <!-- **** REPLACE BACKGROUND IMAGE URL **** -->
-    <div class="section section-poem" style="background-image: url('https://pm1.aminoapps.com/6499/eb46530449dca47ab97b8cca0319e71e059823d4_hq.jpg'); background-size: cover; background-position: center; background-repeat: no-repeat;">
-       <div class="content-wrapper">
-          <h2><span class="icon">📜</span> Poem of the Day</h2>
-           <!-- Inline style for block background (Pastel Green) -->
-          <div class="poem-block" style="background-color: rgba(232, 249, 233, 0.9);">
-              <div class="poem-title">{{ poem.title }}</div>
-              <div class="poem-author">By {{ poem.author }}</div>
-              <div class="poem-text">{{ poem.poem }}</div>
-          </div>
-       </div><!-- /.content-wrapper -->
-    </div><!-- /.section -->
+            </td>
+        </tr>
+    </table><!-- /Full Width Wrapper Table -->
 
-    <!-- 10. Cat GIF -->
-    <!-- **** REPLACE BACKGROUND IMAGE URL **** -->
-    <div class="section section-cat" style="background-image: url('https://images.unsplash.com/photo-1513360371669-4adf3dd7dff8?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8cGV0dGluZyUyMGNhdHxlbnwwfHwwfHx8MA%3D%3D'); background-size: cover; background-position: center; background-repeat: no-repeat;">
-       <div class="content-wrapper">
-          <h2><span class="icon">😺</span> meow meow meow</h2>
-          <img class="cat-gif" src="{{ cat_gif }}" alt="Cute cat gif">
-       </div><!-- /.content-wrapper -->
-    </div><!-- /.section -->
-
-    <div class="footer">
-      <p>Do not go gentle into that good night.</p>
-    </div>
-  </div><!-- /.container -->
 </body>
 </html>

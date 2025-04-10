@@ -14,13 +14,13 @@ from src.api_clients import (
     get_arxiv_papers,
     get_bible_verse,
     get_horoscope,
-    get_useless_fact,
+    get_nearby_places,
+    get_places,
     get_poem_of_the_day,
     get_recipe_of_the_day,
-    get_places,
-    get_nearby_places,
     get_solar_schedule,
     get_stoic_quote,
+    get_useless_fact,
     get_word_of_the_day,
     get_zen_quote,
 )
@@ -104,9 +104,10 @@ def main(cfg: DictConfig) -> None:
     logging.info(
         "Fetching nearby restaurants that might serve the recipe of the day..."
     )
+    text_query = data["recipe"]["name"]
     restaurants = get_places(
         api_key=google_maps_api_key,
-        text_query=data["recipe"]["name"],
+        text_query=text_query,
         bounding_coordinates=geolocation_coordinates,
         place_type=cfg.api.text_search.place_type,
         page_size=cfg.api.text_search.page_size,
@@ -116,21 +117,24 @@ def main(cfg: DictConfig) -> None:
         ),  # <-- convert ListConfig to list,
     )
     if len(restaurants) == 0:
+        # TODO: implement mimesis to get random dish name (requires python3.10 and above - use docker)
+        text_query = "chicken rice"  # chicken rice for now
         logging.warning(
-            f"No restaurants relevant to {data['recipe']['name']} found. Defaulting to chicken rice.."
+            f"No restaurants relevant to {data['recipe']['name']} found. Defaulting to {text_query}.."
         )
         restaurants = get_places(
             api_key=google_maps_api_key,
-            text_query="chicken rice",
+            text_query=text_query,
             bounding_coordinates=geolocation_coordinates,
             place_type=cfg.api.text_search.place_type,
             page_size=cfg.api.text_search.page_size,
             min_rating=cfg.api.text_search.min_rating,
             price_levels=OmegaConf.to_container(
                 cfg.api.text_search.price_levels, resolve=True
-            ),  # <-- convert ListConfig to list,,
+            ),  # convert ListConfig to list,,
         )
     data["restaurants"] = restaurants
+    data["text_query"] = text_query  # store the text query used for restaurants
 
     # Download PDFs if needed
     if cfg.arxiv.download_papers:

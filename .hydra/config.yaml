@@ -31,8 +31,8 @@ api:
     search_radius: 1000
     page_size: 10
 arxiv:
-  query: Image Segmentation
-  max_results: 5
+  query: RAG LLM
+  max_results: 100
   random_k: 3
   download_papers: true
   storage_type: local

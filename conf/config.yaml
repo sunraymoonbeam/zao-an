@@ -39,8 +39,8 @@ api:
 
 # ArXiv settings
 arxiv:
-  query: "Image Segmentation"  # Change this value to search for a different query
-  max_results: 5              # Maximum number of results to fetch from arXiv
+  query: "RAG LLM"  # Change this value to search for a different query
+  max_results: 100              # Maximum number of results to fetch from arXiv
   random_k: 3                # Number of random papers to include in the email, this should be less than or equal to max_results
   download_papers: true  # Whether to download the papers
   storage_type: local  # Options: "local" or "s3"
