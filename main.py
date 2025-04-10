@@ -69,9 +69,12 @@ def main(cfg: DictConfig) -> None:
     """
     logger = logging.getLogger(__name__)
     logger.info("Setting up logging configuration.")
+
+    # Get absolute path to the directory of main.py
+    project_root = Path(__file__).parent
     setup_logging(
         logging_config_path=os.path.join(
-            hydra.utils.get_original_cwd(),
+            project_root,
             "conf",
             "logging.yaml",
         ),
@@ -79,8 +82,14 @@ def main(cfg: DictConfig) -> None:
 
     # Initialize the Gmail service with API credentials.
     logging.info("Initializing Gmail service...")
+
+    # Define paths relative to main.py
+    credentials_path, token_path = (
+        project_root / cfg.credentials_path,
+        Path(__file__).parent / cfg.token_path,
+    )
     gmail_service = GmailService(
-        credentials_path=cfg.credentials_path, token_path=cfg.token_path
+        credentials_path=credentials_path, token_path=token_path
     )
 
     # Retrieve geolocation details for the configured location.
@@ -132,11 +141,13 @@ def main(cfg: DictConfig) -> None:
     google_maps_api_key = os.getenv("GOOGLE_MAPS_API_KEY")
 
     # Fetch places (e.g., restaurants) relevant to the recipe of the day
-    logging.info("Fetching nearby places relevant to the recipe of the day...")
-    query_text = data["recipe"]["name"]
+    logging.info(
+        f"Fetching nearby places relevant to the recipe of the day: {data['recipe']['name']}..."
+    )
+    text_query = data["recipe"]["name"]
     places = get_places(
         api_key=google_maps_api_key,
-        text_query=query_text,
+        text_query=text_query,
         bounding_coordinates=geo_details,
         place_type=cfg.api.text_search.place_type,
         page_size=cfg.api.text_search.page_size,
@@ -148,13 +159,13 @@ def main(cfg: DictConfig) -> None:
     # If no places are found, default to a fallback query (e.g., "chicken rice").
     if not places:
         # TODO: implement mimesis to get random dish name (requires python3.10 and above - use docker)
-        query_text = "chicken rice"
+        text_query = "chicken rice"
         logging.warning(
-            f"No places relevant to '{data['recipe']['name']}' found. Defaulting to '{query_text}'."
+            f"No places relevant to '{data['recipe']['name']}' found. Defaulting to finding places for '{text_query}'."
         )
         places = get_places(
             api_key=google_maps_api_key,
-            text_query=query_text,
+            text_query=text_query,
             bounding_coordinates=geo_details,
             place_type=cfg.api.text_search.place_type,
             page_size=cfg.api.text_search.page_size,
@@ -164,7 +175,7 @@ def main(cfg: DictConfig) -> None:
             ),
         )
     data["places"] = places  # store the fetched places in the data dictionary
-    data["text_query"] = query_text  # store the actual query used
+    data["text_query"] = text_query  # store the actual query used
 
     # Download PDFs from arXiv papers if the configuration is set accordingly.
     if cfg.arxiv.download_papers:
@@ -240,25 +251,23 @@ def main(cfg: DictConfig) -> None:
     ]
 
     progress_bar = Progress(
-            SpinnerColumn(),
-            TextColumn("[progress.percentage]{task.percentage:>3.0f}%"),
-            BarColumn(
-                complete_style="light_goldenrod1", finished_style="light_goldenrod1"
-            ),
-            MofNCompleteColumn(),
-            TextColumn("•"),
-            TimeElapsedColumn(),
-            TextColumn("•"),
-            TimeRemainingColumn(),
-        )
+        SpinnerColumn(),
+        TextColumn("[progress.percentage]{task.percentage:>3.0f}%"),
+        BarColumn(complete_style="light_goldenrod1", finished_style="light_goldenrod1"),
+        MofNCompleteColumn(),
+        TextColumn("•"),
+        TimeElapsedColumn(),
+        TextColumn("•"),
+        TimeRemainingColumn(),
+    )
 
     # Main Loop: send a personalized emai to each recipient
     recipient_list = cfg.email.recipients
     with progress_bar as p:
         for recipient in p.track(
-                recipient_list,
-                description="Sending emails...",
-            ):
+            recipient_list,
+            description="Sending emails...",
+        ):
             recipient_name = get_display_name(recipient)
             subject = f"Good Morning, {recipient_name}!"
 
