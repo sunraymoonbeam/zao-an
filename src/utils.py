@@ -23,23 +23,34 @@ logger = logging.getLogger(__name__)
 
 
 def setup_logging(
-    logging_config_path="./conf/logging.yaml",
+    logging_config_path="conf/logging.yaml",
     default_level=logging.INFO,
 ):
-    """Set up configuration for logging utilities.
+    """Set up configuration for logging utilities."""
 
-    Parameters
-    ----------
-    logging_config_path : str, optional
-        Path to YAML file containing configuration for Python logger,
-        by default "./config/logging_config.yaml"
-    default_level : logging object, optional, by default logging.INFO
+    # Get absolute path to project root from the logging config file
+    project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 
-    """
+    # Ensure logs directory exists
+    logs_dir = os.path.join(project_root, "logs")
+    os.makedirs(logs_dir, exist_ok=True)
+
     try:
-        os.makedirs("logs/", exist_ok=True)
         with open(logging_config_path, encoding="utf-8") as file:
-            log_config = yaml.safe_load(file.read())
+            log_config = yaml.safe_load(file)
+
+        # Inject absolute paths into handlers (overwrite relative)
+        for handler_name in [
+            "debug_file_handler",
+            "info_file_handler",
+            "error_file_handler",
+        ]:
+            if handler_name in log_config.get("handlers", {}):
+                filename = log_config["handlers"][handler_name]["filename"]
+                log_config["handlers"][handler_name]["filename"] = os.path.join(
+                    logs_dir, filename
+                )
+
         logging.config.dictConfig(log_config)
 
     except Exception as error:
@@ -47,8 +58,10 @@ def setup_logging(
             format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
             level=default_level,
         )
-        logger.info(error)
-        logger.info("Logging config file is not found. Basic config is being used.")
+        logging.getLogger().warning(error)
+        logging.getLogger().warning(
+            "Logging config file not found or invalid. Basic config is being used."
+        )
 
 
 def get_display_name(email_address: str) -> str:

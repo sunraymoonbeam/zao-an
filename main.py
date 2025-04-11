@@ -194,11 +194,11 @@ def main(cfg: DictConfig) -> None:
                     ).replace(" ", "_")
                     + ".pdf"
                 )
-                output_directory = os.path.join(
-                    cfg.arxiv.storage_dir, cfg.arxiv.query.lower().replace(" ", "_")
-                )
 
                 if cfg.arxiv.storage_type == "s3":
+                    output_directory = os.path.join(
+                        cfg.arxiv.storage_dir, cfg.arxiv.query.lower().replace(" ", "_")
+                    )
                     s3_pdf_path = download_pdf_s3(
                         pdf_url=pdf_link,
                         s3_dir=output_directory,
@@ -206,6 +206,11 @@ def main(cfg: DictConfig) -> None:
                         s3_config=cfg.s3_config,
                     )
                 else:
+                    output_directory = os.path.join(
+                        project_root,
+                        cfg.arxiv.storage_dir,
+                        cfg.arxiv.query.lower().replace(" ", "_"),
+                    )
                     os.makedirs(output_directory, exist_ok=True)
                     dest_filepath = os.path.join(output_directory, dest_filename)
                     local_pdf_path = download_pdf_local(
@@ -230,12 +235,12 @@ def main(cfg: DictConfig) -> None:
     )
 
     # Ensure the email format is valid; default to "html" if not.
-    email_format = cfg.email.email_format.lower()
-    if email_format not in ("html", "text"):
+    email_format = cfg.email.format.lower()
+    if email_format not in ("html", "plain"):
         logging.warning(
-            f"Invalid email format '{email_format}' specified. Defaulting to HTML."
+            f"Invalid email format '{email_format}' specified. Defaulting to plain."
         )
-        email_format = "html"
+        email_format = "plain"
 
     # Select the correct template based on the email format.
     template_name = "newsletter.html" if email_format == "html" else "newsletter.txt"

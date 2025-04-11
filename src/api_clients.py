@@ -366,12 +366,14 @@ def get_places(
 
     # Fields to request
     fields = [
+        "places.id",
         "places.displayName",
         "places.formattedAddress",
         "places.rating",
         "places.userRatingCount",
         "places.reviews",
         "places.photos",
+        "places.googleMapsLinks",
     ]
     headers = {
         "Content-Type": "application/json",
@@ -410,12 +412,14 @@ def get_places(
 
         for place in places:
             processed_place = {
+                "id": place.get("id"),
                 "name": place.get("displayName", {}).get("text", "N/A"),
                 "address": place.get("formattedAddress", "N/A"),
                 "rating": place.get("rating"),
                 "user_ratings_total": place.get("userRatingCount"),
                 "price_level": place.get("priceLevel"),
                 "photo_base64": None,  # Initialize photo key
+                "google_map_link": f"https://www.google.com/maps/search/?api=1&query={place.get('formattedAddress', 'address')}&query_place_id={place.get('id')}",
             }
 
             # Fetch and encode photo if available.

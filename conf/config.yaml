@@ -15,7 +15,7 @@ email:
     - "lowrenhwa88@gmail.com"
   sender: "lowrenhwa88@gmail.com"            # Authorized sender email address
   subject: "Good Morning Newsletter"         # Email subject line
-  email_format: html                         # Format of the email content: html or text
+  format: html                         # Format of the email content: html or plain
 
 # API settings for various functionalities in the newsletter
 api:
@@ -49,7 +49,7 @@ api:
 
 # ArXiv settings to include research papers in the newsletter
 arxiv:
-  query: "RAG LLM"                           # Search query for arXiv
+  query: "Text to Motion"                           # Search query for arXiv
   max_results: 100                           # Maximum number of results to fetch
   random_k: 3                                # Number of random papers to include in the email 
                                              # (should be less than or equal to max_results)
