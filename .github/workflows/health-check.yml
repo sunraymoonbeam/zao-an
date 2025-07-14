@@ -1,0 +1,114 @@
+name: Health Check
+
+on:
+  schedule:
+    # Run health check daily at 7:30 AM SGT (before the newsletter)
+    - cron: '30 23 * * *'  # 7:30 AM SGT = 23:30 UTC (day before)
+  workflow_dispatch:
+
+env:
+  PYTHON_VERSION: '3.12'
+
+jobs:
+  health-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+        cache: 'pip'
+        
+    - name: Install uv
+      run: |
+        curl -LsSf https://astral.sh/uv/install.sh | sh
+        echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+        
+    - name: Install dependencies
+      run: |
+        uv venv
+        source .venv/bin/activate
+        uv pip install -e .
+        
+    - name: Create health check script
+      run: |
+        cat > health_check.py << 'EOF'
+        import requests
+        import os
+        import sys
+        from dotenv import load_dotenv
+
+        load_dotenv()
+
+        # Test various API endpoints
+        endpoints = {
+            'ArXiv': 'http://export.arxiv.org/api/query?search_query=cat:cs.AI&max_results=1',
+            'Bible API': 'https://bible-api.com/john+3:16',
+            'Solar API': 'https://api.sunrise-sunset.org/json?lat=1.3521&lng=103.8198',
+            'Recipe API': 'https://www.themealdb.com/api/json/v1/1/random.php',
+            'Quote API': 'https://zenquotes.io/api/today'
+        }
+
+        print('🔍 Health Check Results:')
+        failed = []
+
+        for name, url in endpoints.items():
+            try:
+                response = requests.get(url, timeout=5)
+                if response.status_code == 200:
+                    print(f'✅ {name}: OK')
+                else:
+                    print(f'❌ {name}: HTTP {response.status_code}')
+                    failed.append(name)
+            except Exception as e:
+                print(f'❌ {name}: {str(e)}')
+                failed.append(name)
+
+        if failed:
+            print(f'\n⚠️  Failed endpoints: {failed}')
+            sys.exit(1)
+        else:
+            print('\n🎉 All endpoints healthy!')
+        EOF
+        
+    - name: Run health check
+      env:
+        GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
+      run: |
+        source .venv/bin/activate
+        echo "GOOGLE_MAPS_API_KEY=$GOOGLE_MAPS_API_KEY" > .env
+        python health_check.py
+        
+    - name: Check configuration files
+      run: |
+        source .venv/bin/activate
+        
+        echo "📋 Checking configuration files..."
+        
+        # Check if config files exist
+        if [ -f "conf/config.yaml" ]; then
+          echo "✅ Configuration file exists"
+        else
+          echo "❌ Configuration file missing"
+          exit 1
+        fi
+        
+        # Check if template files exist
+        if [ -f "templates/newsletter.html" ] && [ -f "templates/newsletter.txt" ]; then
+          echo "✅ Email templates exist"
+        else
+          echo "❌ Email templates missing"
+          exit 1
+        fi
+        
+        echo "🎉 Configuration check complete!"
+        
+    - name: Cleanup
+      if: always()
+      run: |
+        rm -f .env health_check.py

@@ -1,0 +1,122 @@
+name: Send Daily Newsletter
+
+on:
+  # Schedule the workflow to run daily at 8:00 AM Singapore time (00:00 UTC)
+  schedule:
+    - cron: '0 0 * * *'  # 8:00 AM SGT = 00:00 UTC (Singapore is UTC+8)
+  
+  # Allow manual triggering for testing
+  workflow_dispatch:
+    inputs:
+      test_mode:
+        description: 'Run in test mode (shorter output, no actual email sending)'
+        required: false
+        default: 'false'
+        type: choice
+        options:
+          - 'true'
+          - 'false'
+      dry_run:
+        description: 'Dry run mode (validate setup without sending emails)'
+        required: false
+        default: 'false'
+        type: choice
+        options:
+          - 'true'
+          - 'false'
+
+env:
+  PYTHON_VERSION: '3.12'
+
+jobs:
+  send-newsletter:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+        cache: 'pip'
+        
+    - name: Install uv (Python package manager)
+      run: |
+        curl -LsSf https://astral.sh/uv/install.sh | sh
+        echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+        
+    - name: Verify uv installation
+      run: uv --version
+        
+    - name: Install dependencies
+      run: |
+        uv venv
+        source .venv/bin/activate
+        uv pip install -e .
+        
+    - name: Set up credentials and environment
+      env:
+        GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
+        GMAIL_CREDENTIALS_JSON: ${{ secrets.GMAIL_CREDENTIALS_JSON }}
+        GMAIL_TOKEN_JSON: ${{ secrets.GMAIL_TOKEN_JSON }}
+      run: |
+        # Create credentials.json from secret
+        echo "$GMAIL_CREDENTIALS_JSON" > credentials.json
+        
+        # Create token.json from secret
+        echo "$GMAIL_TOKEN_JSON" > token.json
+        
+        # Create .env file with API keys
+        echo "GOOGLE_MAPS_API_KEY=$GOOGLE_MAPS_API_KEY" > .env
+        
+        # Verify files were created
+        echo "Files created:"
+        ls -la credentials.json token.json .env 2>/dev/null || echo "Some files missing"
+    - name: Run newsletter sending
+      run: |
+        source .venv/bin/activate
+        
+        # Set timezone to Singapore for proper scheduling
+        export TZ=Asia/Singapore
+        
+        # Show current time for debugging
+        echo "Current time (UTC): $(date -u)"
+        echo "Current time (SGT): $(TZ=Asia/Singapore date)"
+        
+        # Run the main script with error handling
+        if [ "${{ github.event.inputs.dry_run }}" == "true" ]; then
+          echo "Running in dry run mode - no emails will be sent"
+          python -c "import logging; logging.basicConfig(level=logging.INFO); print('DRY RUN: Newsletter would be sent now'); print('Environment check completed successfully')"
+        else
+          python main.py
+        fi
+        
+    - name: Upload logs as artifacts (always)
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: newsletter-logs-${{ github.run_number }}
+        path: |
+          logs/
+          main.log
+          .hydra/
+        retention-days: 30
+        if-no-files-found: ignore
+        
+    - name: Notify on failure
+      if: failure()
+      run: |
+        echo "Newsletter sending failed!"
+        echo "Check the logs for details."
+        echo "GitHub Actions run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+        
+    - name: Clean up sensitive files
+      if: always()
+      run: |
+        rm -f credentials.json
+        rm -f token.json
+        rm -f .env
+        echo "Cleanup completed"

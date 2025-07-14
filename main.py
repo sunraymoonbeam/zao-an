@@ -29,7 +29,6 @@ from rich.progress import (
     TimeRemainingColumn,
 )
 
-
 from src.api_clients import (
     get_arxiv_papers,
     get_bible_verse,
@@ -49,6 +48,7 @@ from src.utils import (
     download_pdf_s3,
     get_display_name,
     get_geolocation_details,
+    get_random_dish_name,
     setup_logging,
 )
 
@@ -139,6 +139,9 @@ def main(cfg: DictConfig) -> None:
     # Load environment variables (e.g., Google Maps API key)
     load_dotenv()
     google_maps_api_key = os.getenv("GOOGLE_MAPS_API_KEY")
+    if not google_maps_api_key:
+        logging.error("GOOGLE_MAPS_API_KEY environment variable not set!")
+        raise ValueError("GOOGLE_MAPS_API_KEY environment variable is required")
 
     # Fetch places (e.g., restaurants) relevant to the recipe of the day
     logging.info(
@@ -156,10 +159,9 @@ def main(cfg: DictConfig) -> None:
             cfg.api.text_search.price_levels, resolve=True
         ),
     )
-    # If no places are found, default to a fallback query (e.g., "chicken rice").
+    # If no places are found, default to a fallback query using a random dish name.
     if not places:
-        # TODO: implement mimesis to get random dish name (requires python3.10 and above - use docker)
-        text_query = "chicken rice"
+        text_query = get_random_dish_name()
         logging.warning(
             f"No places relevant to '{data['recipe']['name']}' found. Defaulting to finding places for '{text_query}'."
         )

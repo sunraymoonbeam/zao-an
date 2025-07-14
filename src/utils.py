@@ -206,3 +206,25 @@ def download_pdf_s3(
     except Exception as e:
         logging.error("Error downloading or uploading PDF from %s: %s", pdf_url, e)
     return None
+
+
+def get_random_dish_name() -> str:
+    """
+    Generate a random dish name using mimesis.
+
+    Returns:
+        str: A random dish name (e.g., "pasta", "sushi", "burger").
+             Falls back to "chicken rice" if mimesis fails.
+    """
+    try:
+        from mimesis import Food
+
+        food = Food()
+        dish = food.dish()
+        logging.debug(f"Generated random dish name: {dish}")
+        return dish
+    except Exception as e:
+        logging.warning(
+            f"Failed to generate random dish name with mimesis: {e}. Falling back to 'chicken rice'."
+        )
+        return "chicken rice"

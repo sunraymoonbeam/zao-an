@@ -1,0 +1,167 @@
+name: Test Newsletter (Manual)
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Dry run mode (validate setup without sending emails)'
+        required: false
+        default: 'true'
+        type: choice
+        options:
+          - 'true'
+          - 'false'
+      log_level:
+        description: 'Logging level'
+        required: false
+        default: 'INFO'
+        type: choice
+        options:
+          - 'DEBUG'
+          - 'INFO'
+          - 'WARNING'
+          - 'ERROR'
+
+env:
+  PYTHON_VERSION: '3.12'
+
+jobs:
+  test-newsletter:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+        
+    - name: Install uv (Python package manager)
+      run: |
+        curl -LsSf https://astral.sh/uv/install.sh | sh
+        echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+        
+    - name: Install dependencies
+      run: |
+        uv venv
+        source .venv/bin/activate
+        uv pip install -e .
+        
+    - name: Validate project structure
+      run: |
+        echo "Checking project structure..."
+        ls -la
+        echo "Checking configuration files..."
+        ls -la conf/
+        echo "Checking source files..."
+        ls -la src/
+        echo "Checking templates..."
+        ls -la templates/
+        
+    - name: Test import dependencies
+      run: |
+        source .venv/bin/activate
+        python -c "
+        try:
+            from src.api_clients import get_zen_quote, get_recipe_of_the_day
+            from src.gmail_service import GmailService
+            from src.utils import get_display_name, setup_logging
+            import hydra
+            from omegaconf import DictConfig
+            print('✅ All imports successful')
+        except Exception as e:
+            print(f'❌ Import failed: {e}')
+            exit(1)
+        "
+        
+    - name: Test API endpoints (without sensitive data)
+      run: |
+        source .venv/bin/activate
+        python -c "
+        from src.api_clients import get_zen_quote, get_recipe_of_the_day, get_useless_fact
+        
+        print('Testing public APIs...')
+        quote = get_zen_quote()
+        recipe = get_recipe_of_the_day()
+        fact = get_useless_fact()
+        
+        print(f'Quote: {quote.get(\"quote\", \"N/A\")[:50]}...')
+        print(f'Recipe: {recipe.get(\"name\", \"N/A\")}')
+        print(f'Fact: {fact[:50] if fact else \"N/A\"}...')
+        print('✅ API tests completed')
+        "
+        
+    - name: Set up credentials (if provided)
+      if: ${{ github.event.inputs.dry_run == 'false' }}
+      env:
+        GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
+        GMAIL_CREDENTIALS_JSON: ${{ secrets.GMAIL_CREDENTIALS_JSON }}
+        GMAIL_TOKEN_JSON: ${{ secrets.GMAIL_TOKEN_JSON }}
+      run: |
+        # Only set up credentials for actual sending
+        if [ -n "$GMAIL_CREDENTIALS_JSON" ] && [ -n "$GMAIL_TOKEN_JSON" ]; then
+          echo "$GMAIL_CREDENTIALS_JSON" > credentials.json
+          echo "$GMAIL_TOKEN_JSON" > token.json
+          echo "GOOGLE_MAPS_API_KEY=$GOOGLE_MAPS_API_KEY" > .env
+          echo "✅ Credentials configured"
+        else
+          echo "❌ Missing required secrets for non-dry-run mode"
+          exit 1
+        fi
+        
+    - name: Run dry run test
+      if: ${{ github.event.inputs.dry_run == 'true' }}
+      run: |
+        source .venv/bin/activate
+        echo "Running in dry-run mode..."
+        echo "This would test the newsletter generation without sending emails"
+        
+        # Create dummy credentials for testing
+        echo '{"dummy": "credentials"}' > credentials.json
+        echo '{"dummy": "token"}' > token.json
+        echo "GOOGLE_MAPS_API_KEY=dummy_key" > .env
+        
+        # Test configuration loading
+        python -c "
+        import hydra
+        from omegaconf import DictConfig
+        from pathlib import Path
+        
+        @hydra.main(config_path='conf', config_name='config', version_base=None)
+        def test_config(cfg: DictConfig):
+            print('✅ Configuration loaded successfully')
+            print(f'Recipients: {len(cfg.email.recipients)}')
+            print(f'Email format: {cfg.email.format}')
+            print(f'ArXiv query: {cfg.arxiv.query}')
+            
+        test_config()
+        "
+        
+    - name: Run full test
+      if: ${{ github.event.inputs.dry_run == 'false' }}
+      run: |
+        source .venv/bin/activate
+        export TZ=Asia/Singapore
+        
+        echo "Running full newsletter test..."
+        python main.py
+        
+    - name: Upload test artifacts
+      if: always()
+      uses: actions/upload-artifact@v3
+      with:
+        name: test-artifacts
+        path: |
+          logs/
+          main.log
+          .hydra/
+        retention-days: 3
+        
+    - name: Clean up
+      if: always()
+      run: |
+        rm -f credentials.json
+        rm -f token.json
+        rm -f .env

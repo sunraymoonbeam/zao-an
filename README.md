@@ -1,1 +1,254 @@
+# Zao An 早安 - Daily Newsletter Service
 
+A automated daily newsletter service that aggregates content from various APIs and sends personalized emails using GitHub Actions.
+
+## Features
+
+- 📧 **Gmail Integration**: Sends HTML/text emails via Gmail API
+- 🔬 **ArXiv Papers**: Daily research papers with PDF downloads
+- 🌅 **Solar Schedule**: Sunrise/sunset times for your location
+- 💭 **Daily Quotes**: Zen and Stoic quotes for inspiration
+- 🍳 **Recipe of the Day**: Random recipes with images
+- 📍 **Local Places**: Restaurant recommendations based on the daily recipe
+- 🌟 **Horoscope**: Daily horoscope predictions
+- 📚 **Word of the Day**: Vocabulary enrichment
+- 🎭 **Poem of the Day**: Daily poetry
+- 🐱 **Cat GIFs**: Because everyone needs more cats
+- ⏰ **Automated Scheduling**: Runs daily via GitHub Actions
+
+## GitHub Actions Setup
+
+This project includes automated email sending via GitHub Actions that runs daily at 8:00 AM Singapore time.
+
+### Required GitHub Secrets
+
+You need to set up the following secrets in your GitHub repository:
+
+1. **Go to Settings → Secrets and variables → Actions**
+2. **Add the following Repository secrets:**
+
+   - `GOOGLE_MAPS_API_KEY`: Your Google Maps API key for place recommendations
+   - `GMAIL_CREDENTIALS_JSON`: Your Gmail API credentials (entire JSON file content)
+   - `GMAIL_TOKEN_JSON`: Your Gmail API token (entire JSON file content)
+
+### Workflow Files
+
+- **`send-email.yml`**: Main workflow that runs daily at 8:00 AM SGT
+- **`test-newsletter.yml`**: Manual testing workflow for validation
+
+### Quick GitHub Setup
+
+Use the helper script to set up GitHub secrets easily:
+
+```bash
+# Make the script executable (if not already)
+chmod +x scripts/setup-github-secrets.sh
+
+# Run the setup helper
+./scripts/setup-github-secrets.sh
+```
+
+Or set secrets manually using GitHub CLI:
+
+```bash
+# Install GitHub CLI: https://cli.github.com/
+gh auth login
+
+# Set your secrets
+gh secret set GOOGLE_MAPS_API_KEY --body "your-api-key-here"
+gh secret set GMAIL_CREDENTIALS_JSON --body "$(cat credentials.json)"
+gh secret set GMAIL_TOKEN_JSON --body "$(cat token.json)"
+```
+
+### Workflow Monitoring
+
+- **Daily Health Check**: Runs at 7:30 AM SGT to verify API endpoints
+- **Failure Notifications**: Automatically creates GitHub issues when workflows fail
+- **Manual Testing**: Use "Test Newsletter (Manual)" workflow for validation
+
+## Setup
+
+### Local Development
+
+1. **Install Python 3.12+** and [uv](https://docs.astral.sh/uv/getting-started/installation/)
+
+2. **Clone and install dependencies:**
+   ```bash
+   git clone <your-repo-url>
+   cd zao-an
+   uv venv
+   source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+   uv pip install -e .
+   ```
+
+3. **Set up Gmail API credentials:**
+   - Go to [Google Cloud Console](https://console.cloud.google.com/)
+   - Enable the Gmail API
+   - Create credentials (OAuth 2.0 Client ID)
+   - Download `credentials.json` and place it in the project root
+   - Run the script once locally to generate `token.json`
+
+4. **Configure environment variables:**
+   ```bash
+   # Create .env file
+   echo "GOOGLE_MAPS_API_KEY=your_google_maps_api_key" > .env
+   ```
+
+5. **Update configuration:**
+   - Edit `conf/config.yaml` to set your email addresses and preferences
+
+6. **Run locally:**
+   ```bash
+   python main.py
+   ```
+
+### GitHub Actions Setup (Automated Scheduling)
+
+This service can run automatically every day at 8:00 AM Singapore time using GitHub Actions.
+
+#### Required Secrets
+
+Configure these secrets in your GitHub repository (`Settings > Secrets and variables > Actions`):
+
+1. **`GOOGLE_MAPS_API_KEY`**
+   - Get from [Google Cloud Console](https://console.cloud.google.com/)
+   - Enable Places API and Text Search API
+
+2. **`GMAIL_CREDENTIALS_JSON`**
+   - Contents of your `credentials.json` file (as a JSON string)
+   - Example: `{"installed":{"client_id":"...","client_secret":"...","auth_uri":"..."}}`
+
+3. **`GMAIL_TOKEN_JSON`**
+   - Contents of your `token.json` file (as a JSON string)
+   - Generated after first local run with OAuth consent
+   - Example: `{"token":"...","refresh_token":"...","token_uri":"..."}`
+
+#### Setting Up Secrets
+
+1. **Get Gmail API Credentials:**
+   ```bash
+   # Run locally first to generate token.json
+   python main.py
+   
+   # Copy the contents for GitHub secrets
+   cat credentials.json  # Copy this to GMAIL_CREDENTIALS_JSON
+   cat token.json       # Copy this to GMAIL_TOKEN_JSON
+   ```
+
+2. **Add to GitHub:**
+   - Go to your repository > Settings > Secrets and variables > Actions
+   - Click "New repository secret"
+   - Add each secret with the exact names above
+
+#### Workflows
+
+- **`send-email.yml`**: Runs daily at 8:00 AM SGT (midnight UTC)
+- **`test-newsletter.yml`**: Manual testing workflow with dry-run option
+
+#### Manual Trigger
+
+You can manually trigger the newsletter or run tests:
+
+1. Go to Actions tab in your GitHub repository
+2. Select "Send Daily Newsletter" or "Test Newsletter (Manual)"
+3. Click "Run workflow"
+
+## Configuration
+
+### Email Settings (`conf/config.yaml`)
+
+```yaml
+email:
+  recipients:
+    - "recipient1@example.com"
+    - "recipient2@example.com"
+  sender: "your-email@gmail.com"
+  format: "html"  # or "plain"
+```
+
+### API Settings
+
+```yaml
+api:
+  location: "Singapore"
+  country_code: "SG"
+  horoscope_sign: "scorpio"
+```
+
+### ArXiv Papers
+
+```yaml
+arxiv:
+  query: "Computer Vision"
+  max_results: 100
+  random_k: 3
+  download_papers: true
+  storage_type: "local"  # or "s3"
+```
+
+## Project Structure
+
+```
+zao-an/
+├── main.py                 # Main application script
+├── pyproject.toml         # Dependencies and project config
+├── conf/
+│   ├── config.yaml        # Main configuration
+│   └── logging.yaml       # Logging configuration
+├── src/
+│   ├── api_clients.py     # External API integrations
+│   ├── api_google_places.py # Google Places API
+│   ├── gmail_service.py   # Gmail API wrapper
+│   └── utils.py           # Utility functions
+├── templates/
+│   ├── newsletter.html    # HTML email template
+│   └── newsletter.txt     # Plain text email template
+├── .github/workflows/
+│   ├── send-email.yml     # Daily automation
+│   └── test-newsletter.yml # Testing workflow
+└── data/                  # Downloaded PDFs and data
+```
+
+## Troubleshooting
+
+### Common Issues
+
+1. **Gmail Authentication Errors:**
+   - Ensure OAuth consent screen is configured
+   - Check that Gmail API is enabled
+   - Verify credentials.json and token.json are valid
+
+2. **GitHub Actions Failures:**
+   - Check that all secrets are properly configured
+   - Verify secret names match exactly
+   - Check workflow logs for specific error messages
+
+3. **API Rate Limits:**
+   - Some APIs have rate limits
+   - The workflow includes retries and error handling
+
+### Testing
+
+```bash
+# Test API connections
+python -c "from src.api_clients import get_zen_quote; print(get_zen_quote())"
+
+# Test Gmail service (requires credentials)
+python -c "from src.gmail_service import GmailService; print('Gmail service imported successfully')"
+
+# Run dry-run via GitHub Actions
+# Use "Test Newsletter (Manual)" workflow with dry_run=true
+```
+
+### Logs
+
+- Local logs: `logs/` directory and `main.log`
+- GitHub Actions: Available in the Actions tab, also uploaded as artifacts on failure
+
+## License
+
+This project is for personal use. Please respect API terms of service and rate limits.
+
+## Contributing
+
+Feel free to open issues or submit pull requests for improvements!
