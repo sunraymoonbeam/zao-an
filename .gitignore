@@ -177,3 +177,8 @@ cython_debug/
 keys/*
 data/
 .hydra/
+
+.DS_Store
+
+credentials.json
+token.json

@@ -1,13 +1,10 @@
-# Configuration for the Good Morning Newsletter
-
 hydra:
   run:
-    # Directory where the task is executed
-    dir: "."
+    dir: "." # Directory where the task is executed
 
 # Gmail API credentials configuration
-credentials_path: "./keys/credentials.json"  # Path to the credentials file for Gmail API
-token_path: "./keys/token.json"              # Path to the token file for Gmail API
+credentials_path: "./credentials.json"  # Path to the credentials file for Gmail API
+token_path: "./token.json"              # Path to the token file for Gmail API
 
 # Email settings for sending the newsletter
 email:
@@ -49,7 +46,7 @@ api:
 
 # ArXiv settings to include research papers in the newsletter
 arxiv:
-  query: "Text to Motion"                           # Search query for arXiv
+  query: "Computer Vision"                   # Search query for arXiv
   max_results: 100                           # Maximum number of results to fetch
   random_k: 3                                # Number of random papers to include in the email 
                                              # (should be less than or equal to max_results)

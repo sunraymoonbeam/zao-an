@@ -10,3 +10,8 @@ boto3
 tqdm
 rich
 python-json-logger
+jinja2
+hydra-core
+dotenv
+tdqm
+rich

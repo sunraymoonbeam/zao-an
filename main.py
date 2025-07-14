@@ -34,7 +34,6 @@ from src.api_clients import (
     get_arxiv_papers,
     get_bible_verse,
     get_horoscope,
-    get_places,
     get_poem_of_the_day,
     get_recipe_of_the_day,
     get_solar_schedule,
@@ -43,6 +42,7 @@ from src.api_clients import (
     get_word_of_the_day,
     get_zen_quote,
 )
+from src.api_google_places import get_places
 from src.gmail_service import GmailService
 from src.utils import (
     download_pdf_local,
