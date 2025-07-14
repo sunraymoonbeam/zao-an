@@ -51,7 +51,10 @@ arxiv:
   random_k: 3                                # Number of random papers to include in the email 
                                              # (should be less than or equal to max_results)
   download_papers: true                      # Flag to indicate whether to download the papers
-  storage_type: local                        # Storage option: "local" or "s3"
+  storage_type: temp                         # Storage option: "local", "s3", or "temp"
+                                             # - "local": Permanent storage on local filesystem
+                                             # - "s3": Cloud storage (not suitable for email attachments)
+                                             # - "temp": Temporary storage (perfect for GitHub Actions)
   storage_dir: "data/arvix_papers"           # Base path for local storage of papers
 
 # S3 settings (used if storage_type is set to s3)

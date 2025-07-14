@@ -145,8 +145,7 @@ jobs:
         source .venv/bin/activate
         export TZ=Asia/Singapore
         
-        echo "Running full newsletter test..."
-        python main.py
+        echo "Running full newsletter test..."          python main.py --config-name=config-github
         
     - name: Upload test artifacts
       if: always()

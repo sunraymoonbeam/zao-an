@@ -91,7 +91,7 @@ jobs:
           echo "Running in dry run mode - no emails will be sent"
           python -c "import logging; logging.basicConfig(level=logging.INFO); print('DRY RUN: Newsletter would be sent now'); print('Environment check completed successfully')"
         else
-          python main.py
+          python main.py --config-name=config-github
         fi
         
     - name: Upload logs as artifacts (always)

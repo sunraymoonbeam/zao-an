@@ -186,6 +186,49 @@ arxiv:
   storage_type: "local"  # or "s3"
 ```
 
+## 📚 PDF Attachments & Storage
+
+Your newsletter can include arXiv research papers as PDF attachments. The system supports three storage modes:
+
+### Storage Types
+
+1. **`local`** - Permanent storage on local filesystem
+   - ✅ Good for: Development, personal use
+   - ❌ Not suitable for: GitHub Actions (files get deleted)
+
+2. **`s3`** - Cloud storage on AWS S3
+   - ✅ Good for: Long-term storage, backup
+   - ❌ Not suitable for: Email attachments (files are remote)
+
+3. **`temp`** - Temporary storage (perfect for GitHub Actions)
+   - ✅ Good for: GitHub Actions, one-time email sending
+   - ✅ Files exist during script execution, then cleaned up
+   - ✅ Perfect for email attachments
+
+### Configuration
+
+The system automatically uses the right storage type:
+- **Local development**: Uses `storage_type: local` from `conf/config.yaml`
+- **GitHub Actions**: Uses `storage_type: temp` from `conf/config-github.yaml`
+
+### How It Works in GitHub Actions
+
+1. 📥 Downloads arXiv PDFs to temporary directory (`/tmp/arxiv_papers_*`)
+2. 📧 Attaches PDFs to email and sends immediately  
+3. 🧹 Temporary files are automatically cleaned up when workflow ends
+4. ✅ No storage costs, no file management needed!
+
+## 🔧 Configuration Files
+
+- **`conf/config.yaml`** - Default configuration for local development
+- **`conf/config-github.yaml`** - Optimized for GitHub Actions with temp storage
+
+---
+
+## 🎯 Summary
+
+Your newsletter service is now production-ready with GitHub Actions! The workflows will handle everything automatically once you set up the secrets, and PDF attachments will work seamlessly in both local and GitHub Actions environments.
+
 ## Project Structure
 
 ```

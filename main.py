@@ -139,9 +139,6 @@ def main(cfg: DictConfig) -> None:
     # Load environment variables (e.g., Google Maps API key)
     load_dotenv()
     google_maps_api_key = os.getenv("GOOGLE_MAPS_API_KEY")
-    if not google_maps_api_key:
-        logging.error("GOOGLE_MAPS_API_KEY environment variable not set!")
-        raise ValueError("GOOGLE_MAPS_API_KEY environment variable is required")
 
     # Fetch places (e.g., restaurants) relevant to the recipe of the day
     logging.info(
@@ -204,21 +201,40 @@ def main(cfg: DictConfig) -> None:
                     s3_pdf_path = download_pdf_s3(
                         pdf_url=pdf_link,
                         s3_dir=output_directory,
-                        dest_filename=f"{dest_filename}.pdf",
+                        dest_filename=f"{dest_filename}",
                         s3_config=cfg.s3_config,
                     )
-                else:
-                    output_directory = os.path.join(
-                        project_root,
-                        cfg.arxiv.storage_dir,
-                        cfg.arxiv.query.lower().replace(" ", "_"),
-                    )
+                elif cfg.arxiv.storage_type in ["local", "temp"]:
+                    # For both local and temp, store files locally
+                    # The difference is temp files are automatically cleaned up
+                    if cfg.arxiv.storage_type == "temp":
+                        # Use system temp directory for GitHub Actions
+                        import tempfile
+
+                        temp_dir = tempfile.mkdtemp(prefix="arxiv_papers_")
+                        output_directory = os.path.join(
+                            temp_dir, cfg.arxiv.query.lower().replace(" ", "_")
+                        )
+                        logging.info(f"Using temporary directory: {output_directory}")
+                    else:
+                        # Use configured local directory
+                        output_directory = os.path.join(
+                            project_root,
+                            cfg.arxiv.storage_dir,
+                            cfg.arxiv.query.lower().replace(" ", "_"),
+                        )
+
                     os.makedirs(output_directory, exist_ok=True)
                     dest_filepath = os.path.join(output_directory, dest_filename)
                     local_pdf_path = download_pdf_local(
                         pdf_url=pdf_link,
                         dest_filepath=dest_filepath,
                     )
+                else:
+                    logging.warning(
+                        f"Unknown storage_type: {cfg.arxiv.storage_type}. Skipping PDF download."
+                    )
+
                 # Update the paper dictionary with paths to the PDF files.
                 paper["local_path"] = local_pdf_path
                 paper["s3_path"] = s3_pdf_path

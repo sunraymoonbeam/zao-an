@@ -1,0 +1,16 @@
+# filepath: /Users/lowrenhwa/Desktop/zao-an/conf/config-github.yaml
+# Configuration optimized for GitHub Actions environment
+
+# Inherit from base config
+defaults:
+  - config
+
+# Override specific settings for GitHub Actions
+arxiv:
+  storage_type: temp                         # Use temporary storage for GitHub Actions
+  download_papers: true                      # Enable PDF downloads
+  storage_dir: "/tmp/arxiv_papers"          # Use system temp directory
+
+# Ensure proper email sending
+email:
+  format: html                              # Use HTML format for better email appearance
