@@ -254,6 +254,73 @@ zao-an/
 
 ## Troubleshooting
 
+### 🚨 GitHub Actions Issues
+
+#### JSON Decode Error in Secrets
+If you see `JSONDecodeError: Expecting value: line 2 column 1`, your GitHub secrets are not properly formatted:
+
+```bash
+# Step 1: Validate your local files
+python scripts/validate-credentials.py
+
+# Step 2: Use the debug helper
+chmod +x scripts/debug-secrets.sh
+./scripts/debug-secrets.sh
+```
+
+#### Cache Issues
+- ✅ Fixed: Now uses `uv` cache instead of pip
+- Clear GitHub Actions cache: Settings → Actions → Caches → Delete
+
+#### Secret Formatting Rules
+- ❌ **Wrong**: Extra spaces or newlines in JSON
+- ❌ **Wrong**: Copying from terminal with line breaks
+- ✅ **Right**: Exact JSON content from files (use `cat credentials.json`)
+
+### 🔧 Common Issues
+
+1. **Gmail Authentication Errors:**
+   - Ensure OAuth consent screen is configured
+   - Check that Gmail API is enabled
+   - Verify credentials.json and token.json are valid
+
+2. **GitHub Actions Failures:**
+   - Check that all secrets are properly configured
+   - Verify secret names match exactly
+   - Check workflow logs for specific error messages
+
+3. **API Rate Limits:**
+   - Some APIs have rate limits
+   - The workflow includes retries and error handling
+
+### 🧪 Testing
+
+```bash
+# Validate local credentials before GitHub setup
+python scripts/validate-credentials.py
+
+# Test API connections
+python -c "from src.api_clients import get_zen_quote; print(get_zen_quote())"
+
+# Test Gmail service (requires credentials)
+python -c "from src.gmail_service import GmailService; print('Gmail service imported successfully')"
+
+# Test in GitHub Actions with dry run
+# Go to Actions → "Test Newsletter (Manual)" → Run with dry_run=true
+```
+
+### 📋 GitHub Secrets Checklist
+
+Before setting up GitHub Actions, ensure:
+
+- [ ] `credentials.json` is valid JSON (test with `python -m json.tool credentials.json`)
+- [ ] `token.json` is valid JSON (test with `python -m json.tool token.json`)
+- [ ] Google Maps API key is set in `.env`
+- [ ] All three secrets are set in GitHub: `GMAIL_CREDENTIALS_JSON`, `GMAIL_TOKEN_JSON`, `GOOGLE_MAPS_API_KEY`
+- [ ] Environment `zao-an` is created in GitHub repository settings
+
+## Troubleshooting
+
 ### Common Issues
 
 1. **Gmail Authentication Errors:**

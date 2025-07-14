@@ -4,6 +4,7 @@
 # Inherit from base config
 defaults:
   - config
+  - _self_
 
 # Override specific settings for GitHub Actions
 arxiv:

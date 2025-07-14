@@ -39,6 +39,14 @@ jobs:
       with:
         python-version: ${{ env.PYTHON_VERSION }}
         
+    - name: Cache uv dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/uv
+        key: ${{ runner.os }}-uv-${{ hashFiles('**/pyproject.toml') }}
+        restore-keys: |
+          ${{ runner.os }}-uv-
+        
     - name: Install uv (Python package manager)
       run: |
         curl -LsSf https://astral.sh/uv/install.sh | sh
@@ -101,12 +109,32 @@ jobs:
         GMAIL_CREDENTIALS_JSON: ${{ secrets.GMAIL_CREDENTIALS_JSON }}
         GMAIL_TOKEN_JSON: ${{ secrets.GMAIL_TOKEN_JSON }}
       run: |
+        # Debug secret lengths (without exposing content)
+        echo "Secret validation:"
+        echo "GMAIL_CREDENTIALS_JSON length: ${#GMAIL_CREDENTIALS_JSON}"
+        echo "GMAIL_TOKEN_JSON length: ${#GMAIL_TOKEN_JSON}"
+        echo "GOOGLE_MAPS_API_KEY length: ${#GOOGLE_MAPS_API_KEY}"
+        
         # Only set up credentials for actual sending
         if [ -n "$GMAIL_CREDENTIALS_JSON" ] && [ -n "$GMAIL_TOKEN_JSON" ]; then
           echo "$GMAIL_CREDENTIALS_JSON" > credentials.json
           echo "$GMAIL_TOKEN_JSON" > token.json
+          
+          # Validate JSON format
+          if ! python -m json.tool credentials.json > /dev/null 2>&1; then
+            echo "❌ GMAIL_CREDENTIALS_JSON is not valid JSON"
+            echo "First 50 characters: $(head -c 50 credentials.json)"
+            exit 1
+          fi
+          
+          if ! python -m json.tool token.json > /dev/null 2>&1; then
+            echo "❌ GMAIL_TOKEN_JSON is not valid JSON" 
+            echo "First 50 characters: $(head -c 50 token.json)"
+            exit 1
+          fi
+          
           echo "GOOGLE_MAPS_API_KEY=$GOOGLE_MAPS_API_KEY" > .env
-          echo "✅ Credentials configured"
+          echo "✅ Credentials configured and validated"
         else
           echo "❌ Missing required secrets for non-dry-run mode"
           exit 1

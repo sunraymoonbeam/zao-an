@@ -53,7 +53,7 @@ from src.utils import (
 )
 
 
-@hydra.main(config_path="conf", config_name="config")
+@hydra.main(config_path="conf", config_name="config", version_base=None)
 def main(cfg: DictConfig) -> None:
     """
     Main function to execute the following steps:
