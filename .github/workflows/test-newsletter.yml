@@ -27,6 +27,7 @@ env:
 
 jobs:
   test-newsletter:
+    environment: zao-an
     runs-on: ubuntu-latest
     
     steps:

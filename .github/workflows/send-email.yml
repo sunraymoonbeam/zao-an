@@ -30,6 +30,7 @@ env:
 
 jobs:
   send-newsletter:
+    environment: zao-an
     runs-on: ubuntu-latest
     timeout-minutes: 30
     
